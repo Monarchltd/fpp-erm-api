@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>runWebApi</name>
+    </assembly>
+    <members>
+        <member name="M:DotNet8.WebApi.Controllers.HelloWorldController.GetMeter(System.String)">
+            <summary>  
+            Get all Student  
+            </summary>  
+            <returns>List of Student</returns>
+        </member>
+    </members>
+</doc>

@@ -1,0 +1,34 @@
+@DotNet8.ScalarWebApi_HostAddress = https://localhost:7242
+@ScalarExample_HostAddress = http://localhost:5290
+
+# GET request to HelloWorld endpoint
+GET {{ScalarExample_HostAddress}}/HelloWorld/
+Accept: application/json
+
+###
+
+# GET request to HelloWorld/echo with a query parameter
+GET {{ScalarExample_HostAddress}}/HelloWorld/echo?message=HelloWorld
+Accept: application/json
+@msn=string
+GET {{DotNet8.ScalarWebApi_HostAddress}}/helloworld/meter?msn={{msn}}
+
+###
+
+# GET request to HelloWorld/echo with a query parameter
+GET {{ScalarExample_HostAddress}}/Tender/
+Accept: application/json
+
+###
+
+# GET request to HelloWorld/echo with a query parameter
+GET {{ScalarExample_HostAddress}}/User/
+Accept: application/json
+
+###
+
+# GET request to HelloWorld/echo with a query parameter
+GET {{ScalarExample_HostAddress}}/DataInsert/
+Accept: application/json
+
+###
