@@ -874,7 +874,7 @@ namespace DotNet8.WebApi.Factory.Utilities
                       "[udte] = '" + DateTime.Now.ToString("dd/MM/yyyy hh:mm") + "'" +
                       " WHERE [tenderid] = '"+ tenderid + "';";
 
-                retval = update_to_db(sql, configuration);
+                int tmpid = update_to_db(sql, configuration);
 
             }
             catch (Exception ex)

@@ -12,9 +12,9 @@ namespace DotNet8.WebApi.Controllers
         [Route("sndEmail")]// Matches GET requests to /Tender
         public IActionResult sndEmail(string foldername, string subjectline, string mailto, string tenderid, string username)
         {
-            sendEmail.sndEmail(foldername, subjectline, mailto, tenderid, username, configuration);
+            int retval = sendEmail.sndEmail(foldername, subjectline, mailto, tenderid, username, configuration);
 
-            return Ok();
+            return Ok(retval);
         }
     }
 }

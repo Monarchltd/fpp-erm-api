@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Azure.Identity;
+using MailKit;
 using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -11,7 +12,7 @@ namespace DotNet8.WebApi.Factory.Utilities
 {
     public class sendEmail
     {
-        public async static void sndEmail(string foldername, string subjectline, string mailto, string tenderid, string username, IConfiguration configuration)
+        public static int sndEmail(string foldername, string subjectline, string mailto, string tenderid, string username, IConfiguration configuration)
         {
             StreamWriter sw = new StreamWriter("emailError.txt");
             sw.WriteLine("Email Log notes");
@@ -44,6 +45,8 @@ namespace DotNet8.WebApi.Factory.Utilities
                     }
                 }
 
+                sw.WriteLine($"{foldername}\\email.txt file created");
+
                 var builder = new BodyBuilder
                 {
                     HtmlBody = sb.ToString(),
@@ -55,25 +58,72 @@ namespace DotNet8.WebApi.Factory.Utilities
 
                 message.Body = builder.ToMessageBody();
 
-                using var smtp = new SmtpClient();
+                using var protocolLog = new ProtocolLogger("smtp.log");
 
-                await smtp.ConnectAsync("smtp.office365.com", 587, SecureSocketOptions.StartTls);
+                //using var smtp = new SmtpClient(protocolLog);
 
-                var oauth2 = new SaslMechanismOAuth2("fpp.autotenders@eic.co.uk", token.Token);
+                var smtp = new SmtpClient(protocolLog) { Timeout = 60000 };
 
-                await smtp.AuthenticateAsync(oauth2);
-                await smtp.SendAsync(message);
-                await smtp.DisconnectAsync(true);
-                retVal = 1;
+                sw.WriteLine($"smtp object created");
 
-                double rval = updateSql.updateTenderSent(tenderid, username, configuration);
+                const int maxAttempts = 3;
+                
+                for (int attempt = 1; attempt <= maxAttempts; attempt++)
+                {
+                    try
+                    {
+                        sw.WriteLine($"Attempt {attempt}");
 
+                        //await Task.Delay(TimeSpan.FromSeconds(30));
+
+                        //await smtp.ConnectAsync("smtp.office365.com", 587, SecureSocketOptions.StartTls);
+                        smtp.Connect("smtp.office365.com", 587, SecureSocketOptions.StartTls);
+
+                        sw.WriteLine($"SMTP connected Connected");
+
+                        var oauth2 = new SaslMechanismOAuth2("fpp.autotenders@eic.co.uk", token.Token);
+
+                        //await smtp.AuthenticateAsync(oauth2);
+                        //await smtp.SendAsync(message);
+                        //await smtp.DisconnectAsync(true);
+                        smtp.Authenticate(oauth2);
+                        smtp.Send(message);
+                        smtp.Disconnect(true);
+
+                        retVal = 1;
+
+                        double rval = updateSql.updateTenderSent(tenderid, username, configuration);
+
+                        sw.WriteLine("Mail sent ");
+
+                        break;
+                    }
+                    catch (TimeoutException ex)
+                    {
+                        if (attempt == maxAttempts)
+                            throw;
+
+                        //await Task.Delay(TimeSpan.FromSeconds(5));
+                    }
+                    catch (Exception ex)
+                    {
+                        sw.WriteLine(ex.Message.ToString());
+                    }
+                }
+                
+            }
+            catch (SmtpCommandException ex)
+            {
+                sw.WriteLine(ex.Message.ToString());
+                sw.WriteLine(ex.StatusCode.ToString());
+            }
+            catch (SmtpProtocolException ex)
+            {
+                sw.WriteLine(ex.Message.ToString());
             }
             catch (Exception ex)
             {
-
                 sw.WriteLine(ex.Message.ToString());
-
             }
             finally
             {
@@ -82,6 +132,7 @@ namespace DotNet8.WebApi.Factory.Utilities
             sw.WriteLine("Log Ended");
             sw.Close();
 
+            return retVal;
         }
 
 
