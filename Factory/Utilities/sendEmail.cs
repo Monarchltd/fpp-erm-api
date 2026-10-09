@@ -12,7 +12,7 @@ namespace DotNet8.WebApi.Factory.Utilities
 {
     public class sendEmail
     {
-        public static int sndEmail(string foldername, string subjectline, string mailto, string tenderid, string username, IConfiguration configuration)
+        public static int sndEmail(string foldername, string subjectline, string mailto, string tenderid, string username, string tenderref, IConfiguration configuration)
         {
             StreamWriter sw = new StreamWriter("emailError.txt");
             sw.WriteLine("Email Log notes");
@@ -54,7 +54,17 @@ namespace DotNet8.WebApi.Factory.Utilities
                     TextBody = "Please see the attached files."
                 };
 
-                //builder.Attachments.Add(@".\Uploads\Swaythling Mop Up tender NHH MON-001878.xlsx");
+                string[] attach = tenderref.Split("~");
+
+                if (attach.Length > 0)
+                {
+                    for (int i=1; i < (attach.Length-1); i++)
+                    {
+                        string spath = Path.Combine(attach[0], attach[i]);
+                        builder.Attachments.Add(spath);
+                    }
+                }
+
 
                 message.Body = builder.ToMessageBody();
 

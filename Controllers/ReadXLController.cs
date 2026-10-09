@@ -23,7 +23,8 @@ namespace DotNet8.WebApi.Controllers
             //MasErmTenderModel_1 tender = new MasErmTenderModel_1();
             MasErmTenderModel_3 tender = new MasErmTenderModel_3();
 
-            if (tabname.Equals("Ele-NHH"))
+            if (tabname.Equals("Ele-NHH") ||
+                tabname.Equals("Ele-HH"))
             {
                 //tender = engineXLSX.ReadExcelFile(filepath, tabname);
                 tender = engineXLSX.ReadExcelFileNHH(filepath, tabname);
