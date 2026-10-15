@@ -31,9 +31,10 @@ namespace DotNet8.WebApi.Controllers
             }
             else
             {
-                APIEnum.Enum myEnum = APIEnum.Enum.ERR_CODE1;
+                //APIEnum.Enum myEnum = APIEnum.Enum.ERR_CODE1;
 
-                tender.errMessage = APIEnum.getDescription(myEnum);
+                //tender.errMessage = APIEnum.getDescription(myEnum);
+                tender = engineXLSX.ReadExcelFileGAS(filepath, tabname);
             }
 
            return Ok(tender);

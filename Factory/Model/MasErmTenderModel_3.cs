@@ -31,6 +31,8 @@
         public List<TrnERMTenderDetailsNHH> TrnERMTenderDetails { get; set; }
         public MasErmTenderHeaderModel_1    MasErmTenderHeaderModel { get; set; }
 
+        public List<TrnERMTenderDetailsGAS> TrnERMTenderDetailsGAS { get; set; }
+
         public string successMessage { get; set; }
         public string errMessage { get; set; }
     }

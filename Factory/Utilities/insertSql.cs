@@ -864,5 +864,163 @@ namespace DotNet8.WebApi.Factory.Utilities
 
             return retval;
         }
+
+        public static double TrnERMTenderDetailsGASUpload(List<TrnERMTenderDetailsGAS> model, IConfiguration configuration)
+        {
+            int retval = -1;
+            string currDate = DateTime.Now.ToString("yyyy-MM-dd HH:MM");
+            List<TrnERMTenderDetailsGAS> trnERMTenderDetails = new List<TrnERMTenderDetailsGAS>();
+
+            try
+            {
+                foreach (var m in model)
+                {
+                    TrnERMTenderDetailsGAS trnDetails = new TrnERMTenderDetailsGAS();
+
+                    trnDetails.MasErmTender = m.MasErmTender;
+                    trnDetails.Location_Ref = m.Location_Ref;
+                    trnDetails.Client_Ref = m.Client_Ref;
+                    trnDetails.Address1 = m.Address1;
+                    trnDetails.Address2 = m.Address2;
+                    trnDetails.Address3 = m.Address3;
+                    trnDetails.Address4 = m.Address4;
+                    trnDetails.Address5 = m.Address5;
+                    trnDetails.Msn = m.Msn;
+                    trnDetails.Mprn = m.Mprn;
+                    trnDetails.Startdate = m.Startdate;
+                    trnDetails.Payment_method = m.Payment_method;
+                    trnDetails.Payment_duration = m.Payment_duration;
+                    trnDetails.SuppId = m.SuppId;
+                    trnDetails.Last_bill_date = m.Last_bill_date;
+                    trnDetails.Last_bill_date_supp = m.Last_bill_date_supp;
+                    trnDetails.Day_Rate = m.Day_Rate;
+                    trnDetails.Peak_Decjan = m.Peak_Decjan;
+                    trnDetails.Peak_Novfeb = m.Peak_Novfeb;
+                    trnDetails.Peak_Other = m.Peak_Other;
+                    trnDetails.Offpeak = m.Offpeak;
+                    trnDetails.Other = m.Other;
+                    trnDetails.DistCommodity_penceperday = m.DistCommodity_penceperday;
+                    trnDetails.MeteringCharge_penceperday = m.MeteringCharge_penceperday;
+                    trnDetails.DistributionSystemCapacity_penceperday = m.DistributionSystemCapacity_penceperday;
+                    trnDetails.ManagementFee_penceprday = m.ManagementFee_penceprday;
+                    trnDetails.DistFixed_penceperday = m.DistFixed_penceperday;
+                    trnDetails.Unidentifiedgas_penceperday = m.Unidentifiedgas_penceperday;
+                    trnDetails.TransportFee_penceperday = m.TransportFee_penceperday;
+                    trnDetails.AMRCharge_penceperday = m.AMRCharge_penceperday;
+                    trnDetails.DistCustomerCapacity_penceprday = m.DistCustomerCapacity_penceprday;
+                    trnDetails.SiteFee_penceprday = m.SiteFee_penceprday;
+                    trnDetails.Remarks = m.Remarks;
+                    trnDetails.ERMRemarks = m.ERMRemarks;
+                    trnDetails.cusr = m.cusr;
+                    trnDetails.isActive = m.isActive;
+
+
+                    trnERMTenderDetails.Add(trnDetails);
+
+
+                    string sql = String.Empty;
+                    sql = String.Format("INSERT INTO [dbo].[TrnERMTenderDetailsGAS] " +
+                                        "([MasErmTender] " +
+                                        ", [Location_Ref] " +
+                                        ", [Client_Ref] " +
+                                        ", [Address1] " +
+                                        ", [Address2] " +
+                                        ", [Address3] " +
+                                        ", [Address4] " +
+                                        ", [Address5] " +
+                                        ", [Postcode] " +
+                                        " ,[Msn] " +
+                                        " ,[Mprn] " +
+                                        " ,[kWh] " +
+                                        " ,[Startdate] " +
+                                        " ,[Payment_method] " +
+                                        " ,[Payment_duration] " +
+                                        " ,[SuppId] " +
+                                        " ,[Last_bill_date] " +
+                                        " ,[Last_bill_date_supp] " +
+                                        " ,[Standing_charge_penceperday] " +
+                                        " ,[Day_Rate] " +
+                                        " ,[Peak_Decjan] " +
+                                        " ,[Peak_Novfeb] " +
+                                        " ,[Peak_Other] " +
+                                        " ,[Offpeak] " +
+                                        " ,[Other] " +
+                                        " ,[DistCommodity_penceperday] " +
+                                        " ,[MeteringCharge_penceperday] " +
+                                        " ,[DistributionSystemCapacity_penceperday] " +
+                                        " ,[ManagementFee_penceprday] " +
+                                        " ,[DistFixed_penceperday] " +
+                                        " ,[Unidentifiedgas_penceperday] " +
+                                        " ,[TransportFee_penceperday] " +
+                                        " ,[AMRCharge_penceperday] " +
+                                        " ,[DistCustomerCapacity_penceprday] " +
+                                        " ,[SiteFee_penceprday] " +
+                                        " ,[Remarks] " +
+                                        " ,[ERMRemarks] " +
+                                        ",[cusr]" +
+                                        ",[cdte]" +
+                                        ",[uusr]" +
+                                        ",[udte]" +
+                                        ",[isActive]) VALUES (" +
+                                        " {0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}'," +
+                                        "'{11}','{12}','{13}','{14}','{15}','{16}','{17}','{18}','{19}','{20}'," +
+                                        "'{21}','{22}','{23}','{24}','{25}','{26}','{27}','{28}','{29}','{30}'," +
+                                        "'{31}','{32}','{33}','{34}','{35}','{36}','{37}','{38}','{39}','{40}'," +
+                                        " {41})",
+                                        trnDetails.MasErmTender,
+                                        trnDetails.Location_Ref,
+                                        trnDetails.Client_Ref,
+                                        trnDetails.Address1,
+                                        trnDetails.Address2,
+                                        trnDetails.Address3,
+                                        trnDetails.Address4,
+                                        trnDetails.Address5,
+                                        trnDetails.Postcode,
+                                        trnDetails.Msn,
+                                        trnDetails.Mprn,
+                                        trnDetails.kWh,
+                                        trnDetails.Startdate,
+                                        trnDetails.Payment_method,
+                                        trnDetails.Payment_duration,
+                                        trnDetails.SuppId,
+                                        trnDetails.Last_bill_date,
+                                        trnDetails.Last_bill_date_supp,
+                                        trnDetails.Standing_charge_penceperday,
+                                        trnDetails.Day_Rate,
+                                        trnDetails.Peak_Decjan,
+                                        trnDetails.Peak_Novfeb,
+                                        trnDetails.Peak_Other,
+                                        trnDetails.Offpeak,
+                                        trnDetails.Other,
+                                        trnDetails.DistCommodity_penceperday,
+                                        trnDetails.MeteringCharge_penceperday,
+                                        trnDetails.DistributionSystemCapacity_penceperday.Trim(),
+                                        trnDetails.ManagementFee_penceprday,
+                                        trnDetails.DistFixed_penceperday,
+                                        trnDetails.Unidentifiedgas_penceperday.Trim(),
+                                        trnDetails.TransportFee_penceperday,
+                                        trnDetails.AMRCharge_penceperday,
+                                        trnDetails.DistCustomerCapacity_penceprday,
+                                        trnDetails.SiteFee_penceprday,
+                                        trnDetails.Remarks,
+                                        trnDetails.ERMRemarks,
+                                        trnDetails.cusr,
+                                        currDate,
+                                        "",
+                                        "",
+                                        trnDetails.isActive);
+
+                    //replace characters
+
+                    retval += insert_to_db(sql, configuration);
+                }
+
+            }
+            catch (Exception ex)
+            {
+            }
+            return retval;
+
+        }
     }
 }

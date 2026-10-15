@@ -23,5 +23,16 @@ namespace DotNet8.WebApi.Controllers
             return model != null ? Ok(model) : NotFound(model);
         }
 
+        [HttpPost]
+        [Route("InsertGasAnalysis")]// Matches GET requests to /HelloWorld
+        [Consumes(MediaTypeNames.Application.Json)]
+        //ublic IActionResult InsertAnalysis([FromBody] MasErmTenderAnalysis model)
+        public IActionResult InsertGAsAnalysis([FromBody] List<TrnERMTenderDetailsGAS> model)
+        {
+            double inserted_id = insertSql.TrnERMTenderDetailsGASUpload(model, configuration);
+
+            return model != null ? Ok(model) : NotFound(model);
+        }
+
     }
 }

@@ -1,5 +1,5 @@
 Email Log notes
-C:\Users\Public\FixedPricingPortal\erm\ui\\Uploads\4d9067c5-cfd8-4489-b844-0b53427480cc\email.txt file created
+C:\Users\Public\FixedPricingPortal\erm\ui\\Uploads\101a3558-d8ec-4442-aef9-4634a20cf095\email.txt file created
 smtp object created
 Attempt 1
 SMTP connected Connected
