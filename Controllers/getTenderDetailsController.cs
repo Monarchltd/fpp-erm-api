@@ -23,8 +23,6 @@ namespace DotNet8.WebApi.Controllers
             viewERMTenderModel erm = new viewERMTenderModel();
             try
             {
-
-
                 using (SqlConnection connection = new SqlConnection())
                 {
                     connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
@@ -216,6 +214,65 @@ namespace DotNet8.WebApi.Controllers
                         }
                     }
 
+                    erm.ermDetailGAS = new List<TrnERMTenderDetailsGAS>();
+
+                    sql = "SELECT * FROM [Fixed Pricing Portal].[dbo].[TrnERMTenderDetailsGAS] WHERE [MasErmTender] = '" + erm.ermTender.id + "'";
+
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                TrnERMTenderDetailsGAS itm = new TrnERMTenderDetailsGAS();
+                                itm.id = reader.GetInt64(0);
+                                itm.MasErmTender = reader.GetInt64(1);
+                                itm.Location_Ref = reader.GetString(2);
+                                itm.Client_Ref = reader.GetString(3);
+                                itm.Address1 = reader.GetString(4);
+                                itm.Address2 = reader.GetString(5);
+                                itm.Address3 = reader.GetString(6);
+                                itm.Address4 = reader.GetString(7);
+                                itm.Address5 = reader.GetString(8);
+                                itm.Postcode = reader.GetString(9);
+                                itm.Msn = reader.GetString(10);
+                                itm.Mprn = reader.GetString(11);
+                                itm.kWh = reader.GetString(12);
+                                itm.Startdate = reader.GetString(13);
+                                itm.Payment_method = reader.GetString(14);
+                                itm.Payment_duration = reader.GetString(15);
+                                itm.SuppId = reader.GetString(16);
+                                itm.Last_bill_date = reader.GetString(17);
+                                itm.Last_bill_date_supp = reader.GetString(18);
+                                itm.Standing_charge_penceperday = reader.GetString(19);
+                                itm.Day_Rate = reader.GetString(20);
+                                itm.Peak_Decjan = reader.GetString(21);
+                                itm.Peak_Novfeb = reader.GetString(22);
+                                itm.Peak_Other = reader.GetString(23);
+                                itm.Offpeak = reader.GetString(24);
+                                itm.Other = reader.GetString(25);
+                                itm.DistCommodity_penceperday = reader.GetString(26);
+                                itm.MeteringCharge_penceperday = reader.GetString(27);
+                                itm.DistributionSystemCapacity_penceperday = reader.GetString(28);
+                                itm.ManagementFee_penceprday = reader.GetString(29);
+                                itm.DistFixed_penceperday = reader.GetString(30);
+                                itm.Unidentifiedgas_penceperday = reader.GetString(31);
+                                itm.TransportFee_penceperday = reader.GetString(32);
+                                itm.AMRCharge_penceperday = reader.GetString(33);
+                                itm.DistCustomerCapacity_penceprday = reader.GetString(34);
+                                itm.SiteFee_penceprday = reader.GetString(35);
+                                itm.Remarks = reader.GetString(36);
+                                itm.ERMRemarks = reader.GetString(37);
+                                itm.cusr = reader.GetString(38);
+                                itm.cdte = reader.GetDateTime(39);
+                                itm.uusr = reader.GetString(40);
+                                itm.udte = reader.GetDateTime(41);
+                                itm.isActive = reader.GetInt32(42);
+
+                                erm.ermDetailGAS.Add(itm);
+                            }
+                        }
+                    }
 
                     erm.ermRequirements = new TrnERMRequirements();
 
@@ -251,7 +308,6 @@ namespace DotNet8.WebApi.Controllers
                         }
                     }
 
-
                     erm.ermSuppliers = new List<TrnERMRequirementsSuppliers>();
 
                     sql = "SELECT * FROM [Fixed Pricing Portal].[dbo].[TrnERMRequirementsSuppliers_1] WHERE [MasErmTender] = '" + erm.ermTender.id + "'";
@@ -283,7 +339,6 @@ namespace DotNet8.WebApi.Controllers
                         }
                     }
 
-
                     erm.ermUploads = new List<TrnERMRequirementsUploads>();
 
                     sql = "SELECT * FROM [Fixed Pricing Portal].[dbo].[TrnERMRequirementsUploads_1] WHERE [MasErmTender] = '" + erm.ermTender.id + "'";
@@ -313,8 +368,6 @@ namespace DotNet8.WebApi.Controllers
                             }
                         }
                     }
-
-
 
                     erm.ermContractDuration = new List<TrnERMRequirementsContractDuration>();
 

@@ -5,40 +5,39 @@
     using DotNet8.WebApi.Factory.Model.Edf;
     using System;
     using System.Collections.Generic;
-    using System.Text;
-    using DocumentFormat.OpenXml.Packaging;
-    using DocumentFormat.OpenXml.Spreadsheet;
-    using Aspose.Cells;
+    using Microsoft.Data.SqlClient;
+    using Microsoft.Extensions.Configuration;
+    using DotNet8.WebApi.Factory.Model.sse;
 
     public class engineXLSX
     {
-  
+
         public static MasErmTenderModel_1 ReadExcelFile(string filefullpath, string tabname)
         {
-            string errMessage                       = String.Empty;
-            MasErmTenderModel_1 retval              = new MasErmTenderModel_1();
+            string errMessage = String.Empty;
+            MasErmTenderModel_1 retval = new MasErmTenderModel_1();
 
-            retval.MasErmClientModel                = new MasErmClientModel();
-            retval.MasErmNetworkModel               = new MasErmNetworkModel();
-            retval.MasErmTenderHeaderModel          = new MasErmTenderHeaderModel_1();
-            retval.MasErmTenderMsnModel_s           = new List<MasErmTenderMsnModel_1>();
-            retval.MasErmTenderMpanModel_s          = new List<MasErmTenderMpanModel_1>();
-            retval.MasErmTenderConsumptionModel_s   = new List<MasErmTenderConsumptionModel_1>();
-            retval.MasErmTenderContractModel_s      = new List<MasErmTenderContractModel_1>();
-            retval.MasErmTenderCurrentRatesModel_s  = new List<MasErmTenderCurrentRatesModel_1>();
+            retval.MasErmClientModel = new MasErmClientModel();
+            retval.MasErmNetworkModel = new MasErmNetworkModel();
+            retval.MasErmTenderHeaderModel = new MasErmTenderHeaderModel_1();
+            retval.MasErmTenderMsnModel_s = new List<MasErmTenderMsnModel_1>();
+            retval.MasErmTenderMpanModel_s = new List<MasErmTenderMpanModel_1>();
+            retval.MasErmTenderConsumptionModel_s = new List<MasErmTenderConsumptionModel_1>();
+            retval.MasErmTenderContractModel_s = new List<MasErmTenderContractModel_1>();
+            retval.MasErmTenderCurrentRatesModel_s = new List<MasErmTenderCurrentRatesModel_1>();
 
 
-            retval.MasErmClientModel.name           = "THE MONARCH PARTNERSHIP";
-            retval.MasErmClientModel.cusr           = "System";
-            retval.MasErmClientModel.cdte           = DateTime.Now;
-            retval.MasErmClientModel.uusr           = "System";
-            retval.MasErmClientModel.udte           = DateTime.MinValue;
-            retval.MasErmClientModel.isActive       = 1;
+            retval.MasErmClientModel.name = "THE MONARCH PARTNERSHIP";
+            retval.MasErmClientModel.cusr = "System";
+            retval.MasErmClientModel.cdte = DateTime.Now;
+            retval.MasErmClientModel.uusr = "System";
+            retval.MasErmClientModel.udte = DateTime.MinValue;
+            retval.MasErmClientModel.isActive = 1;
 
-            retval.MasErmNetworkModel.cusr          = "System";
-            retval.MasErmNetworkModel.cdte          = DateTime.Now;
-            retval.MasErmNetworkModel.uusr          = String.Empty;
-            retval.MasErmNetworkModel.udte          = DateTime.Now;
+            retval.MasErmNetworkModel.cusr = "System";
+            retval.MasErmNetworkModel.cdte = DateTime.Now;
+            retval.MasErmNetworkModel.uusr = String.Empty;
+            retval.MasErmNetworkModel.udte = DateTime.Now;
 
             try
             {
@@ -53,110 +52,110 @@
                     {
                         switch (row.RowNumber())
                         {
-                            case 3: retval.MasErmNetworkModel.name =            row.Cell(2).GetValue<string>(); break;
-                            case 4: retval.MasErmNetworkModel.headaddress1 =    row.Cell(2).GetValue<string>(); break;
-                            case 5: retval.consultantname =                     row.Cell(2).GetValue<string>(); break;
-                            case 6: retval.notes =                              row.Cell(2).GetValue<string>(); break;
-                            case 7: retval.MasErmNetworkModel.address1 =        row.Cell(1).GetValue<string>(); break;
-                            case 8:                             break;
-                            case 9:                             break;
-                            case 10:                            break;
-                            default:                            break;
+                            case 3: retval.MasErmNetworkModel.name = row.Cell(2).GetValue<string>(); break;
+                            case 4: retval.MasErmNetworkModel.headaddress1 = row.Cell(2).GetValue<string>(); break;
+                            case 5: retval.consultantname = row.Cell(2).GetValue<string>(); break;
+                            case 6: retval.notes = row.Cell(2).GetValue<string>(); break;
+                            case 7: retval.MasErmNetworkModel.address1 = row.Cell(1).GetValue<string>(); break;
+                            case 8: break;
+                            case 9: break;
+                            case 10: break;
+                            default: break;
                         }
 
                         if (row.RowNumber() > 10)
                         {
-                            MasErmTenderMsnModel_1 model_msn =  new MasErmTenderMsnModel_1();
-                            model_msn.id =                      0;
-                            model_msn.MasErmTender =            "0";
-                            model_msn.locref =                  row.Cell(1).GetValue<string>();
+                            MasErmTenderMsnModel_1 model_msn = new MasErmTenderMsnModel_1();
+                            model_msn.id = 0;
+                            model_msn.MasErmTender = "0";
+                            model_msn.locref = row.Cell(1).GetValue<string>();
                             if (model_msn.locref.Length > 0)
                             {
-                                model_msn.clientref =   row.Cell(2).GetValue<string>();
-                                model_msn.address1 =    row.Cell(3).GetValue<string>();
-                                model_msn.address2 =    row.Cell(4).GetValue<string>();
-                                model_msn.address3 =    row.Cell(5).GetValue<string>();
-                                model_msn.address4 =    row.Cell(6).GetValue<string>();
-                                model_msn.postcode =    row.Cell(8).GetValue<string>();
-                                model_msn.msn =         row.Cell(9).GetValue<string>();
-                                model_msn.cusr =        "";
-                                model_msn.cdte =        Convert.ToDateTime("2019-01-06T17:16:40");
-                                model_msn.uusr =        "";
-                                model_msn.udte =        Convert.ToDateTime("2019-01-06T17:16:40");
-                                model_msn.isActive =    1;
+                                model_msn.clientref = row.Cell(2).GetValue<string>();
+                                model_msn.address1 = row.Cell(3).GetValue<string>();
+                                model_msn.address2 = row.Cell(4).GetValue<string>();
+                                model_msn.address3 = row.Cell(5).GetValue<string>();
+                                model_msn.address4 = row.Cell(6).GetValue<string>();
+                                model_msn.postcode = row.Cell(8).GetValue<string>();
+                                model_msn.msn = row.Cell(9).GetValue<string>();
+                                model_msn.cusr = "";
+                                model_msn.cdte = Convert.ToDateTime("2019-01-06T17:16:40");
+                                model_msn.uusr = "";
+                                model_msn.udte = Convert.ToDateTime("2019-01-06T17:16:40");
+                                model_msn.isActive = 1;
                                 retval.MasErmTenderMsnModel_s.Add(model_msn);
 
-                                MasErmTenderMpanModel_1 model_mpan =            new MasErmTenderMpanModel_1();
-                                model_mpan.TrnERMTenderMsn =                    "";
-                                model_mpan.mpan =                               row.Cell(10).GetValue<string>();
-                                model_mpan.profile =                            model_mpan.mpan.Substring(0, 2);
-                                model_mpan.mtc =                                model_mpan.mpan.Substring(2, 3);
-                                model_mpan.llf =                                model_mpan.mpan.Substring(5, 3);
-                                model_mpan.distributorid =                      model_mpan.mpan.Substring(8, 2);
-                                model_mpan.mpan_core =                          model_mpan.mpan.Substring(8, (model_mpan.mpan.Length - 8));
-                                model_mpan.mpan_core_valid =                    mpanCore_validation(model_mpan.mpan_core) == true ? 1 : 0;
-                                model_mpan.id =                                 0;
-                                model_mpan.MasErmTender =                       "0";
-                                model_mpan.cusr =                               "";
-                                model_mpan.cdte =                               DateTime.Now;
-                                model_mpan.uusr =                               "";
-                                model_mpan.udte =                               DateTime.MinValue;
-                                model_mpan.isActive =                           1;
+                                MasErmTenderMpanModel_1 model_mpan = new MasErmTenderMpanModel_1();
+                                model_mpan.TrnERMTenderMsn = "";
+                                model_mpan.mpan = row.Cell(10).GetValue<string>();
+                                model_mpan.profile = model_mpan.mpan.Substring(0, 2);
+                                model_mpan.mtc = model_mpan.mpan.Substring(2, 3);
+                                model_mpan.llf = model_mpan.mpan.Substring(5, 3);
+                                model_mpan.distributorid = model_mpan.mpan.Substring(8, 2);
+                                model_mpan.mpan_core = model_mpan.mpan.Substring(8, (model_mpan.mpan.Length - 8));
+                                model_mpan.mpan_core_valid = mpanCore_validation(model_mpan.mpan_core) == true ? 1 : 0;
+                                model_mpan.id = 0;
+                                model_mpan.MasErmTender = "0";
+                                model_mpan.cusr = "";
+                                model_mpan.cdte = DateTime.Now;
+                                model_mpan.uusr = "";
+                                model_mpan.udte = DateTime.MinValue;
+                                model_mpan.isActive = 1;
                                 retval.MasErmTenderMpanModel_s.Add(model_mpan);
 
-                                MasErmTenderConsumptionModel_1 model_cons =     new MasErmTenderConsumptionModel_1();
-                                model_cons.id =                                 0;
-                                model_cons.MasErmTender =                       "";
-                                model_cons.TrnERMTenderMsn =                    "0";
-                                model_cons.TrnERMTenderMpan =                   "0";
-                                model_cons.day =                                row.Cell(33).GetValue<string>().Length > 0 ? Math.Round(row.Cell(33).GetValue<decimal>(), 2) : 0;
-                                model_cons.night =                              row.Cell(34).GetValue<string>().Length > 0 ? Math.Round(row.Cell(34).GetValue<decimal>(), 2) : 0;
-                                model_cons.evening =                            row.Cell(35).GetValue<string>().Length > 0 ? Math.Round(row.Cell(35).GetValue<decimal>(), 2) : 0;
-                                model_cons.total =                              row.Cell(36).GetValue<string>().Length > 0 ? Math.Round(row.Cell(36).GetValue<decimal>(), 2) : 0;
-                                model_cons.cusr =                               "";
-                                model_cons.cdte =                               DateTime.Now;
-                                model_cons.uusr =                               "";
-                                model_cons.udte =                               DateTime.MinValue;
-                                model_cons.isActive =                           1;
+                                MasErmTenderConsumptionModel_1 model_cons = new MasErmTenderConsumptionModel_1();
+                                model_cons.id = 0;
+                                model_cons.MasErmTender = "";
+                                model_cons.TrnERMTenderMsn = "0";
+                                model_cons.TrnERMTenderMpan = "0";
+                                model_cons.day = row.Cell(33).GetValue<string>().Length > 0 ? Math.Round(row.Cell(33).GetValue<decimal>(), 2) : 0;
+                                model_cons.night = row.Cell(34).GetValue<string>().Length > 0 ? Math.Round(row.Cell(34).GetValue<decimal>(), 2) : 0;
+                                model_cons.evening = row.Cell(35).GetValue<string>().Length > 0 ? Math.Round(row.Cell(35).GetValue<decimal>(), 2) : 0;
+                                model_cons.total = row.Cell(36).GetValue<string>().Length > 0 ? Math.Round(row.Cell(36).GetValue<decimal>(), 2) : 0;
+                                model_cons.cusr = "";
+                                model_cons.cdte = DateTime.Now;
+                                model_cons.uusr = "";
+                                model_cons.udte = DateTime.MinValue;
+                                model_cons.isActive = 1;
                                 retval.MasErmTenderConsumptionModel_s.Add(model_cons);
 
-                                MasErmTenderContractModel_1 model_contract =    new MasErmTenderContractModel_1();
-                                model_contract.id =                             0;
-                                model_contract.MasErmTender =                   "";
-                                model_contract.TrnERMTenderMsn =                "";
-                                model_contract.TrnERMTenderMpan =               "";
-                                model_contract.TrnERMTenderConsumption =        "";
-                                model_contract.startdate =                      Convert.ToDateTime(row.Cell(37).GetValue<string>());
-                                model_contract.payment_method =                 row.Cell(38).GetValue<string>();
-                                model_contract.payment_duration =               row.Cell(39).GetValue<string>();
-                                model_contract.cusr =                           "";
-                                model_contract.cdte =                           DateTime.Now;
-                                model_contract.uusr =                           "";
-                                model_contract.udte =                           DateTime.MinValue;
-                                model_contract.isActive =                       1;
+                                MasErmTenderContractModel_1 model_contract = new MasErmTenderContractModel_1();
+                                model_contract.id = 0;
+                                model_contract.MasErmTender = "";
+                                model_contract.TrnERMTenderMsn = "";
+                                model_contract.TrnERMTenderMpan = "";
+                                model_contract.TrnERMTenderConsumption = "";
+                                model_contract.startdate = Convert.ToDateTime(row.Cell(37).GetValue<string>());
+                                model_contract.payment_method = row.Cell(38).GetValue<string>();
+                                model_contract.payment_duration = row.Cell(39).GetValue<string>();
+                                model_contract.cusr = "";
+                                model_contract.cdte = DateTime.Now;
+                                model_contract.uusr = "";
+                                model_contract.udte = DateTime.MinValue;
+                                model_contract.isActive = 1;
                                 retval.MasErmTenderContractModel_s.Add(model_contract);
 
-                                MasErmTenderCurrentRatesModel_1 model_rates =   new MasErmTenderCurrentRatesModel_1();
-                                model_rates.id =                                0;
-                                model_rates.MasErmTender =                      "";
-                                model_rates.TrnERMTenderMsn =                   "";
-                                model_rates.TrnERMTenderMpan =                  "";
-                                model_rates.TrnERMTenderConsumption =           "";
-                                model_rates.TrnERMTenderContract =              "";
-                                model_rates.startdate =                         DateTime.MinValue;
-                                model_rates.standingchargeperiod =              row.Cell(40).GetValue<string>();
+                                MasErmTenderCurrentRatesModel_1 model_rates = new MasErmTenderCurrentRatesModel_1();
+                                model_rates.id = 0;
+                                model_rates.MasErmTender = "";
+                                model_rates.TrnERMTenderMsn = "";
+                                model_rates.TrnERMTenderMpan = "";
+                                model_rates.TrnERMTenderConsumption = "";
+                                model_rates.TrnERMTenderContract = "";
+                                model_rates.startdate = DateTime.MinValue;
+                                model_rates.standingchargeperiod = row.Cell(40).GetValue<string>();
                                 decimal dValue;
-                                bool isdecimal =                                decimal.TryParse(row.Cell(41).GetValue<string>(), out dValue);
-                                model_rates.standing_charge =                   isdecimal == true ? Math.Round(row.Cell(41).GetValue<decimal>(), 2) : 0;
-                                isdecimal =                                     decimal.TryParse(row.Cell(42).GetValue<string>(), out dValue);
-                                model_rates.day_rate =                          isdecimal == true ? Math.Round(row.Cell(42).GetValue<decimal>(), 2) : 0;
-                                isdecimal =                                     decimal.TryParse(row.Cell(43).GetValue<string>(), out dValue);
-                                model_rates.night_rate =                        isdecimal == true ? Math.Round(row.Cell(43).GetValue<decimal>(), 2) : 0;
-                                model_rates.cusr =                              "";
-                                model_rates.cdte =                              DateTime.Now;
-                                model_rates.uusr =                              "";
-                                model_rates.udte =                              DateTime.MinValue;
-                                model_rates.isActive =                          1;
+                                bool isdecimal = decimal.TryParse(row.Cell(41).GetValue<string>(), out dValue);
+                                model_rates.standing_charge = isdecimal == true ? Math.Round(row.Cell(41).GetValue<decimal>(), 2) : 0;
+                                isdecimal = decimal.TryParse(row.Cell(42).GetValue<string>(), out dValue);
+                                model_rates.day_rate = isdecimal == true ? Math.Round(row.Cell(42).GetValue<decimal>(), 2) : 0;
+                                isdecimal = decimal.TryParse(row.Cell(43).GetValue<string>(), out dValue);
+                                model_rates.night_rate = isdecimal == true ? Math.Round(row.Cell(43).GetValue<decimal>(), 2) : 0;
+                                model_rates.cusr = "";
+                                model_rates.cdte = DateTime.Now;
+                                model_rates.uusr = "";
+                                model_rates.udte = DateTime.MinValue;
+                                model_rates.isActive = 1;
 
                                 retval.MasErmTenderCurrentRatesModel_s.Add(model_rates);
                             }
@@ -170,23 +169,23 @@
             {
                 Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
                 Console.WriteLine(ex.ToString());
-                errMessage              = ex.Message.ToString();
-                retval.successMessage   = null;
-                retval.errMessage       = errMessage;
+                errMessage = ex.Message.ToString();
+                retval.successMessage = null;
+                retval.errMessage = errMessage;
 
             }
             return (retval.successMessage != null ? cleanseData(retval) : retval);
         }
-        
+
         public static MasErmTenderModel_1 cleanseData(MasErmTenderModel_1 data)
         {
             if (data != null)
             {
-                string[] strTmp =                       data.MasErmNetworkModel.name.Trim().Split(",");
-                data.consultantname =                   (strTmp.Length >0 ? strTmp[0] : String.Empty) + "," + (strTmp.Length > 1 ? strTmp[1] : String.Empty);
-                data.consultantemail =                  (strTmp.Length > 1 ? strTmp[2] : String.Empty);
+                string[] strTmp = data.MasErmNetworkModel.name.Trim().Split(",");
+                data.consultantname = (strTmp.Length > 0 ? strTmp[0] : String.Empty) + "," + (strTmp.Length > 1 ? strTmp[1] : String.Empty);
+                data.consultantemail = (strTmp.Length > 1 ? strTmp[2] : String.Empty);
 
-                data.MasErmNetworkModel.address1 =  data.MasErmNetworkModel.address1.Replace("Correspondance Address : ", "");
+                data.MasErmNetworkModel.address1 = data.MasErmNetworkModel.address1.Replace("Correspondance Address : ", "");
             }
 
             return data;
@@ -196,12 +195,12 @@
         {
             if (data != null)
             {
-                string[] strTmp =       data.MasErmNetworkModel.consultant.Trim().Split(",");
-                data.consultantname =   (strTmp.Length > 0 ? strTmp[0] : String.Empty) + "," + (strTmp.Length > 1 ? strTmp[1] : String.Empty);
-                data.consultantemail =  (strTmp.Length > 1 ? strTmp[1] : String.Empty);
+                string[] strTmp = data.MasErmNetworkModel.consultant.Trim().Split(",");
+                data.consultantname = (strTmp.Length > 0 ? strTmp[0] : String.Empty) + "," + (strTmp.Length > 1 ? strTmp[1] : String.Empty);
+                data.consultantemail = (strTmp.Length > 1 ? strTmp[1] : String.Empty);
 
                 int i = 0;
-                string[] strTmp1 =      data.MasErmNetworkModel.corraddress1.Split(",");
+                string[] strTmp1 = data.MasErmNetworkModel.corraddress1.Split(",");
                 data.MasErmNetworkModel.corraddress1 = "";
                 foreach (string str in strTmp1)
                 {
@@ -213,12 +212,12 @@
                 }
                 data.MasErmNetworkModel.corrpostcode = strTmp1[strTmp1.Length - 1];
 
-                string[] strTmp2 =      data.MasErmNetworkModel.headaddress1.Split(",");
+                string[] strTmp2 = data.MasErmNetworkModel.headaddress1.Split(",");
                 data.MasErmNetworkModel.headaddress1 = "";
                 i = 0;
-                foreach(string str in strTmp2)
+                foreach (string str in strTmp2)
                 {
-                    if (i < (strTmp2.Length-1))
+                    if (i < (strTmp2.Length - 1))
                     {
                         data.MasErmNetworkModel.headaddress1 += strTmp2[i] + ",";
                     }
@@ -237,35 +236,35 @@
 
             if (!string.IsNullOrEmpty(mpan))
             {
-                int mpanDig1 = Convert.ToInt16(mpan.Substring(0,1));
-                int mpanDig2 = Convert.ToInt16(mpan.Substring(1,1));
-                int mpanDig3 = Convert.ToInt16(mpan.Substring(2,1));
-                int mpanDig4 = Convert.ToInt16(mpan.Substring(3,1));
-                int mpanDig5 = Convert.ToInt16(mpan.Substring(4,1));
-                int mpanDig6 = Convert.ToInt16(mpan.Substring(5,1));
-                int mpanDig7 = Convert.ToInt16(mpan.Substring(6,1));
-                int mpanDig8 = Convert.ToInt16(mpan.Substring(7,1));
-                int mpanDig9 = Convert.ToInt16(mpan.Substring(8,1));
-                int mpanDig10= Convert.ToInt16(mpan.Substring(9,1));
-                int mpanDig11= Convert.ToInt16(mpan.Substring(10,1));
-                int mpanDig12= Convert.ToInt16(mpan.Substring(11,1));
+                int mpanDig1 = Convert.ToInt16(mpan.Substring(0, 1));
+                int mpanDig2 = Convert.ToInt16(mpan.Substring(1, 1));
+                int mpanDig3 = Convert.ToInt16(mpan.Substring(2, 1));
+                int mpanDig4 = Convert.ToInt16(mpan.Substring(3, 1));
+                int mpanDig5 = Convert.ToInt16(mpan.Substring(4, 1));
+                int mpanDig6 = Convert.ToInt16(mpan.Substring(5, 1));
+                int mpanDig7 = Convert.ToInt16(mpan.Substring(6, 1));
+                int mpanDig8 = Convert.ToInt16(mpan.Substring(7, 1));
+                int mpanDig9 = Convert.ToInt16(mpan.Substring(8, 1));
+                int mpanDig10 = Convert.ToInt16(mpan.Substring(9, 1));
+                int mpanDig11 = Convert.ToInt16(mpan.Substring(10, 1));
+                int mpanDig12 = Convert.ToInt16(mpan.Substring(11, 1));
 
                 // P11*3 +Q11*5 +R11*7 +S11*13 +T11*17 +U11*19
                 //       +V11*23 +W11*29 +X11*31 +Y11*37 +Z11*41 +AA11*43
                 int source = (mpanDig1 * 3 +
-                            mpanDig2* 5 +
-                            mpanDig3* 7 +
-                            mpanDig4* 13 +
-                            mpanDig5* 17 +
-                            mpanDig6* 19 +
-                            mpanDig7* 23 +
-                            mpanDig8* 29 +
-                            mpanDig9* 31 +
-                            mpanDig10* 37 +
+                            mpanDig2 * 5 +
+                            mpanDig3 * 7 +
+                            mpanDig4 * 13 +
+                            mpanDig5 * 17 +
+                            mpanDig6 * 19 +
+                            mpanDig7 * 23 +
+                            mpanDig8 * 29 +
+                            mpanDig9 * 31 +
+                            mpanDig10 * 37 +
                             mpanDig11 * 41 +
                             mpanDig12 * 43) % 11;
 
-                int digit13  = Convert.ToInt16(mpan.Substring(12, 1));
+                int digit13 = Convert.ToInt16(mpan.Substring(12, 1));
 
 
                 int mod10_11 = (source) % 10;
@@ -280,25 +279,25 @@
 
         public static MasErmTenderModel_3 ReadExcelFileNHH(string filefullpath, string tabname)
         {
-            string errMessage =                     String.Empty;
-            MasErmTenderModel_3 retval =            new MasErmTenderModel_3();
+            string errMessage = String.Empty;
+            MasErmTenderModel_3 retval = new MasErmTenderModel_3();
 
-            retval.MasErmClientModel =              new MasErmClientModel();
-            retval.MasErmNetworkModel =             new MasErmNetworkModelNHH();
-            retval.MasErmTenderHeaderModel =        new MasErmTenderHeaderModel_1();
-            retval.TrnERMTenderDetails =            new List<TrnERMTenderDetailsNHH>();
+            retval.MasErmClientModel = new MasErmClientModel();
+            retval.MasErmNetworkModel = new MasErmNetworkModelNHH();
+            retval.MasErmTenderHeaderModel = new MasErmTenderHeaderModel_1();
+            retval.TrnERMTenderDetails = new List<TrnERMTenderDetailsNHH>();
 
-            retval.MasErmClientModel.name =         "THE MONARCH PARTNERSHIP";
-            retval.MasErmClientModel.cusr =         "System";
-            retval.MasErmClientModel.cdte =         DateTime.Now;
-            retval.MasErmClientModel.uusr =         "System";
-            retval.MasErmClientModel.udte =         DateTime.MinValue;
-            retval.MasErmClientModel.isActive =     1;
+            retval.MasErmClientModel.name = "THE MONARCH PARTNERSHIP";
+            retval.MasErmClientModel.cusr = "System";
+            retval.MasErmClientModel.cdte = DateTime.Now;
+            retval.MasErmClientModel.uusr = "System";
+            retval.MasErmClientModel.udte = DateTime.MinValue;
+            retval.MasErmClientModel.isActive = 1;
 
-            retval.MasErmNetworkModel.cusr =        "System";
-            retval.MasErmNetworkModel.cdte =        DateTime.Now;
-            retval.MasErmNetworkModel.uusr =        String.Empty;
-            retval.MasErmNetworkModel.udte =        DateTime.Now;
+            retval.MasErmNetworkModel.cusr = "System";
+            retval.MasErmNetworkModel.cdte = DateTime.Now;
+            retval.MasErmNetworkModel.uusr = String.Empty;
+            retval.MasErmNetworkModel.udte = DateTime.Now;
 
             try
             {
@@ -317,25 +316,25 @@
 
                         switch (row.RowNumber())
                         {
-                            case 1: retval.MasErmClientModel.name =             row.Cell(4).GetValue<string>(); break;
-                            case 3: retval.MasErmNetworkModel.name =            row.Cell(2).GetValue<string>(); break;
+                            case 1: retval.MasErmClientModel.name = row.Cell(4).GetValue<string>(); break;
+                            case 3: retval.MasErmNetworkModel.name = row.Cell(2).GetValue<string>(); break;
                             case 4: retval.MasErmNetworkModel.registration_no = row.Cell(2).GetValue<string>(); break;
-                            case 5: retval.MasErmNetworkModel.headaddress1 =    row.Cell(2).GetValue<string>(); break;
-                            case 6: retval.MasErmNetworkModel.consultant =      row.Cell(2).GetValue<string>(); break;
-                            case 7: retval.MasErmNetworkModel.comments =        row.Cell(1).GetValue<string>(); break;
-                            case 8: retval.MasErmNetworkModel.corraddress1 =    row.Cell(2).GetValue<string>(); break;
+                            case 5: retval.MasErmNetworkModel.headaddress1 = row.Cell(2).GetValue<string>(); break;
+                            case 6: retval.MasErmNetworkModel.consultant = row.Cell(2).GetValue<string>(); break;
+                            case 7: retval.MasErmNetworkModel.comments = row.Cell(1).GetValue<string>(); break;
+                            case 8: retval.MasErmNetworkModel.corraddress1 = row.Cell(2).GetValue<string>(); break;
                             case 9: break;
-                            case 10:break;
-                            case 11:int idx = 1;
-                                    string headerValue = String.Empty;
-                                    while (idx <= 62)
-                                    {
-                                        headerValue += row.Cell(idx).GetValue<string>() + ",";
-                                        idx++;
-                                    }
-                                    err = nhhHeaderValidation(headerValue);
-                                    break;
-                            default:break;
+                            case 10: break;
+                            case 11: int idx = 1;
+                                string headerValue = String.Empty;
+                                while (idx <= 62)
+                                {
+                                    headerValue += row.Cell(idx).GetValue<string>() + ",";
+                                    idx++;
+                                }
+                                err = nhhHeaderValidation(headerValue);
+                                break;
+                            default: break;
                         }
 
                         if (row.RowNumber() == 11)
@@ -360,68 +359,68 @@
 
                             if (tdnhh.Location_Ref.Length > 0)
                             {
-                                tdnhh.Location_Ref =                            row.Cell(1).GetValue<string>().Replace("'", " ");
-                                tdnhh.Client_Ref =                              row.Cell(2).GetValue<string>().Replace("'", " ");
-                                tdnhh.Address1 =                                row.Cell(3).GetValue<string>().Replace("'", " ");
-                                tdnhh.Address2 =                                row.Cell(4).GetValue<string>().Replace("'", " ");
-                                tdnhh.Address3 =                                row.Cell(5).GetValue<string>().Replace("'", " ");
-                                tdnhh.Address4 =                                row.Cell(6).GetValue<string>().Replace("'", " ");
-                                tdnhh.Address5 =                                row.Cell(7).GetValue<string>().Replace("'", " ");
-                                tdnhh.Postcode =                                row.Cell(8).GetValue<string>().Replace("'", " ");
-                                tdnhh.Msn =                                     row.Cell(9).GetValue<string>().Replace("'", " ");
-                                tdnhh.Mpanfull =                                row.Cell(10).GetValue<string>().Replace("'", " ");
-                                tdnhh.Profile =                                 row.Cell(11).GetValue<string>().Replace("'", " ");
-                                tdnhh.Mtc =                                     row.Cell(12).GetValue<string>().Replace("'", " ");
-                                tdnhh.Llf =                                     row.Cell(13).GetValue<string>().Replace("'", " ");
-                                tdnhh.Distributor_ID =                          row.Cell(14).GetValue<string>().Replace("'", " ");
-                                tdnhh.Mpan_Core =                               row.Cell(15).GetValue<string>().Replace("'", " ");
-                                tdnhh.Mpan_Status =                             row.Cell(16).GetValue<string>().Replace("'", " ");
-                                tdnhh.Day_kWh =                                 row.Cell(17).GetValue<string>().Replace("'", " ");
-                                tdnhh.Night_kWh =                               row.Cell(18).GetValue<string>().Replace("'", " ");
-                                tdnhh.Evening_kWh =                             row.Cell(19).GetValue<string>().Replace("'", " ");
-                                tdnhh.Peak_kWh =                                row.Cell(20).GetValue<string>().Replace("'", " ");
-                                tdnhh.OffPeak_kWh =                             row.Cell(21).GetValue<string>().Replace("'", " ");
-                                tdnhh.Total_kWh =                               row.Cell(22).GetValue<string>().Replace("'", " ");
-                                tdnhh.kVa =                                     row.Cell(23).GetValue<string>().Replace("'", " ");
-                                tdnhh.Start_Date =                              row.Cell(24).GetValue<string>().Replace("'", " ");
-                                tdnhh.Payment_Method =                          row.Cell(25).GetValue<string>().Replace("'", " ");
-                                tdnhh.Payment_Duration =                        row.Cell(26).GetValue<string>().Replace("'", " ");
-                                tdnhh.Supplier =                                row.Cell(27).GetValue<string>().Replace("'", " ");
-                                tdnhh.LastBill_Date =                           row.Cell(28).GetValue<string>().Replace("'", " ");
-                                tdnhh.LastBill_Date_Supplier =                  row.Cell(29).GetValue<string>().Replace("'", " ");
-                                tdnhh.StandingCharge_penceorday =               row.Cell(30).GetValue<string>().Replace("'", " ");
-                                tdnhh.DayRate =                                 row.Cell(31).GetValue<string>().Replace("'", " ");
-                                tdnhh.NightRate =                               row.Cell(32).GetValue<string>().Replace("'", " ");
-                                tdnhh.EveningRate =                             row.Cell(33).GetValue<string>().Replace("'", " ");
-                                tdnhh.AvailRate =                               row.Cell(34).GetValue<string>().Replace("'", " ");
-                                tdnhh.PeakDecjan =                              row.Cell(35).GetValue<string>().Replace("'", " ");
-                                tdnhh.PeakNovfeb =                              row.Cell(36).GetValue<string>().Replace("'", " ");
-                                tdnhh.PeakOther =                               row.Cell(37).GetValue<string>().Replace("'", " ");
-                                tdnhh.OffPeak =                                 row.Cell(38).GetValue<string>().Replace("'", " ");
-                                tdnhh.Other =                                   row.Cell(39).GetValue<string>().Replace("'", " ");
-                                tdnhh.MeteringCharge_penceorday =               row.Cell(40).GetValue<string>().Replace("'", " ");
-                                tdnhh.COMMSCharge_penceorday =                  row.Cell(41).GetValue<string>().Replace("'", " ");
-                                tdnhh.SettlementAgencyCharge_penceorday =       row.Cell(42).GetValue<string>().Replace("'", " ");
-                                tdnhh.MeterAdministratorAgentCharge_penceorday =row.Cell(43).GetValue<string>().Replace("'", " ");
-                                tdnhh.NonEnergy_penceorday =                    row.Cell(44).GetValue<string>().Replace("'", " ");
-                                tdnhh.UMSCharge_penceorday =                    row.Cell(45).GetValue<string>().Replace("'", " ");
-                                tdnhh.TNUosFixedDailyCharge_penceorday =        row.Cell(46).GetValue<string>().Replace("'", " ");
-                                tdnhh.IntelligentAnalytics_penceorday =         row.Cell(47).GetValue<string>().Replace("'", " ");
-                                tdnhh.RenewableObligation_penceorday =          row.Cell(48).GetValue<string>().Replace("'", " ");
-                                tdnhh.NuclearRABLevy_penceorday =               row.Cell(49).GetValue<string>().Replace("'", " ");
-                                tdnhh.AMRCharge_penceorday =                    row.Cell(50).GetValue<string>().Replace("'", " ");
-                                tdnhh.MeterAssetProviderMAPCharge_penceorday =  row.Cell(51).GetValue<string>().Replace("'", " ");
-                                tdnhh.DataCollectorDataAggregator_penceorday =  row.Cell(52).GetValue<string>().Replace("'", " ");
-                                tdnhh.MSPUnitCharge_penceorday =                row.Cell(53).GetValue<string>().Replace("'", " ");
-                                tdnhh.MeterServiceAdvancedCharge_penceorday =   row.Cell(54).GetValue<string>().Replace("'", " ");
-                                tdnhh.SiteFee_penceorday =                      row.Cell(55).GetValue<string>().Replace("'", " ");
-                                tdnhh.DayAheadPremium_penceorday =              row.Cell(56).GetValue<string>().Replace("'", " ");
-                                tdnhh.REGO_penceorday =                         row.Cell(57).GetValue<string>().Replace("'", " ");
-                                tdnhh.CfdCharge_penceorday =                    row.Cell(58).GetValue<string>().Replace("'", " ");
-                                tdnhh.GreengasLevyCharge_penceorday =           row.Cell(59).GetValue<string>().Replace("'", " ");
-                                tdnhh.DataServicesAdvanced_penceorday =         row.Cell(60).GetValue<string>().Replace("'", " ");
-                                tdnhh.Remarks =                                 row.Cell(61).GetValue<string>().Replace("'", " ");
-                                tdnhh.ERMRemarks =                              row.Cell(62).GetValue<string>().Replace("'", " ");
+                                tdnhh.Location_Ref = row.Cell(1).GetValue<string>().Replace("'", " ");
+                                tdnhh.Client_Ref = row.Cell(2).GetValue<string>().Replace("'", " ");
+                                tdnhh.Address1 = row.Cell(3).GetValue<string>().Replace("'", " ");
+                                tdnhh.Address2 = row.Cell(4).GetValue<string>().Replace("'", " ");
+                                tdnhh.Address3 = row.Cell(5).GetValue<string>().Replace("'", " ");
+                                tdnhh.Address4 = row.Cell(6).GetValue<string>().Replace("'", " ");
+                                tdnhh.Address5 = row.Cell(7).GetValue<string>().Replace("'", " ");
+                                tdnhh.Postcode = row.Cell(8).GetValue<string>().Replace("'", " ");
+                                tdnhh.Msn = row.Cell(9).GetValue<string>().Replace("'", " ");
+                                tdnhh.Mpanfull = row.Cell(10).GetValue<string>().Replace("'", " ");
+                                tdnhh.Profile = row.Cell(11).GetValue<string>().Replace("'", " ");
+                                tdnhh.Mtc = row.Cell(12).GetValue<string>().Replace("'", " ");
+                                tdnhh.Llf = row.Cell(13).GetValue<string>().Replace("'", " ");
+                                tdnhh.Distributor_ID = row.Cell(14).GetValue<string>().Replace("'", " ");
+                                tdnhh.Mpan_Core = row.Cell(15).GetValue<string>().Replace("'", " ");
+                                tdnhh.Mpan_Status = row.Cell(16).GetValue<string>().Replace("'", " ");
+                                tdnhh.Day_kWh = row.Cell(17).GetValue<string>().Replace("'", " ");
+                                tdnhh.Night_kWh = row.Cell(18).GetValue<string>().Replace("'", " ");
+                                tdnhh.Evening_kWh = row.Cell(19).GetValue<string>().Replace("'", " ");
+                                tdnhh.Peak_kWh = row.Cell(20).GetValue<string>().Replace("'", " ");
+                                tdnhh.OffPeak_kWh = row.Cell(21).GetValue<string>().Replace("'", " ");
+                                tdnhh.Total_kWh = row.Cell(22).GetValue<string>().Replace("'", " ");
+                                tdnhh.kVa = row.Cell(23).GetValue<string>().Replace("'", " ");
+                                tdnhh.Start_Date = row.Cell(24).GetValue<string>().Replace("'", " ");
+                                tdnhh.Payment_Method = row.Cell(25).GetValue<string>().Replace("'", " ");
+                                tdnhh.Payment_Duration = row.Cell(26).GetValue<string>().Replace("'", " ");
+                                tdnhh.Supplier = row.Cell(27).GetValue<string>().Replace("'", " ");
+                                tdnhh.LastBill_Date = row.Cell(28).GetValue<string>().Replace("'", " ");
+                                tdnhh.LastBill_Date_Supplier = row.Cell(29).GetValue<string>().Replace("'", " ");
+                                tdnhh.StandingCharge_penceorday = row.Cell(30).GetValue<string>().Replace("'", " ");
+                                tdnhh.DayRate = row.Cell(31).GetValue<string>().Replace("'", " ");
+                                tdnhh.NightRate = row.Cell(32).GetValue<string>().Replace("'", " ");
+                                tdnhh.EveningRate = row.Cell(33).GetValue<string>().Replace("'", " ");
+                                tdnhh.AvailRate = row.Cell(34).GetValue<string>().Replace("'", " ");
+                                tdnhh.PeakDecjan = row.Cell(35).GetValue<string>().Replace("'", " ");
+                                tdnhh.PeakNovfeb = row.Cell(36).GetValue<string>().Replace("'", " ");
+                                tdnhh.PeakOther = row.Cell(37).GetValue<string>().Replace("'", " ");
+                                tdnhh.OffPeak = row.Cell(38).GetValue<string>().Replace("'", " ");
+                                tdnhh.Other = row.Cell(39).GetValue<string>().Replace("'", " ");
+                                tdnhh.MeteringCharge_penceorday = row.Cell(40).GetValue<string>().Replace("'", " ");
+                                tdnhh.COMMSCharge_penceorday = row.Cell(41).GetValue<string>().Replace("'", " ");
+                                tdnhh.SettlementAgencyCharge_penceorday = row.Cell(42).GetValue<string>().Replace("'", " ");
+                                tdnhh.MeterAdministratorAgentCharge_penceorday = row.Cell(43).GetValue<string>().Replace("'", " ");
+                                tdnhh.NonEnergy_penceorday = row.Cell(44).GetValue<string>().Replace("'", " ");
+                                tdnhh.UMSCharge_penceorday = row.Cell(45).GetValue<string>().Replace("'", " ");
+                                tdnhh.TNUosFixedDailyCharge_penceorday = row.Cell(46).GetValue<string>().Replace("'", " ");
+                                tdnhh.IntelligentAnalytics_penceorday = row.Cell(47).GetValue<string>().Replace("'", " ");
+                                tdnhh.RenewableObligation_penceorday = row.Cell(48).GetValue<string>().Replace("'", " ");
+                                tdnhh.NuclearRABLevy_penceorday = row.Cell(49).GetValue<string>().Replace("'", " ");
+                                tdnhh.AMRCharge_penceorday = row.Cell(50).GetValue<string>().Replace("'", " ");
+                                tdnhh.MeterAssetProviderMAPCharge_penceorday = row.Cell(51).GetValue<string>().Replace("'", " ");
+                                tdnhh.DataCollectorDataAggregator_penceorday = row.Cell(52).GetValue<string>().Replace("'", " ");
+                                tdnhh.MSPUnitCharge_penceorday = row.Cell(53).GetValue<string>().Replace("'", " ");
+                                tdnhh.MeterServiceAdvancedCharge_penceorday = row.Cell(54).GetValue<string>().Replace("'", " ");
+                                tdnhh.SiteFee_penceorday = row.Cell(55).GetValue<string>().Replace("'", " ");
+                                tdnhh.DayAheadPremium_penceorday = row.Cell(56).GetValue<string>().Replace("'", " ");
+                                tdnhh.REGO_penceorday = row.Cell(57).GetValue<string>().Replace("'", " ");
+                                tdnhh.CfdCharge_penceorday = row.Cell(58).GetValue<string>().Replace("'", " ");
+                                tdnhh.GreengasLevyCharge_penceorday = row.Cell(59).GetValue<string>().Replace("'", " ");
+                                tdnhh.DataServicesAdvanced_penceorday = row.Cell(60).GetValue<string>().Replace("'", " ");
+                                tdnhh.Remarks = row.Cell(61).GetValue<string>().Replace("'", " ");
+                                tdnhh.ERMRemarks = row.Cell(62).GetValue<string>().Replace("'", " ");
 
                                 retval.TrnERMTenderDetails.Add(tdnhh);
 
@@ -473,26 +472,26 @@
 
         public static MasErmTenderModel_3 ReadExcelFileGAS(string filefullpath, string tabname)
         {
-            string errMessage =                 String.Empty;
-            MasErmTenderModel_3 retval =        new MasErmTenderModel_3();
+            string errMessage = String.Empty;
+            MasErmTenderModel_3 retval = new MasErmTenderModel_3();
 
-            retval.MasErmClientModel =          new MasErmClientModel();
-            retval.MasErmNetworkModel =         new MasErmNetworkModelNHH();
-            retval.MasErmTenderHeaderModel =    new MasErmTenderHeaderModel_1();
-            retval.TrnERMTenderDetails =        new List<TrnERMTenderDetailsNHH>();
-            retval.TrnERMTenderDetailsGAS =     new List<TrnERMTenderDetailsGAS>();
+            retval.MasErmClientModel = new MasErmClientModel();
+            retval.MasErmNetworkModel = new MasErmNetworkModelNHH();
+            retval.MasErmTenderHeaderModel = new MasErmTenderHeaderModel_1();
+            retval.TrnERMTenderDetails = new List<TrnERMTenderDetailsNHH>();
+            retval.TrnERMTenderDetailsGAS = new List<TrnERMTenderDetailsGAS>();
 
-            retval.MasErmClientModel.name =     "THE MONARCH PARTNERSHIP";
-            retval.MasErmClientModel.cusr =     "System";
-            retval.MasErmClientModel.cdte =     DateTime.Now;
-            retval.MasErmClientModel.uusr =     "System";
-            retval.MasErmClientModel.udte =     DateTime.MinValue;
+            retval.MasErmClientModel.name = "THE MONARCH PARTNERSHIP";
+            retval.MasErmClientModel.cusr = "System";
+            retval.MasErmClientModel.cdte = DateTime.Now;
+            retval.MasErmClientModel.uusr = "System";
+            retval.MasErmClientModel.udte = DateTime.MinValue;
             retval.MasErmClientModel.isActive = 1;
 
-            retval.MasErmNetworkModel.cusr =    "System";
-            retval.MasErmNetworkModel.cdte =    DateTime.Now;
-            retval.MasErmNetworkModel.uusr =    String.Empty;
-            retval.MasErmNetworkModel.udte =    DateTime.Now;
+            retval.MasErmNetworkModel.cusr = "System";
+            retval.MasErmNetworkModel.cdte = DateTime.Now;
+            retval.MasErmNetworkModel.uusr = String.Empty;
+            retval.MasErmNetworkModel.udte = DateTime.Now;
 
             try
             {
@@ -511,25 +510,25 @@
 
                         switch (row.RowNumber())
                         {
-                            case 1: retval.MasErmClientModel.name =             row.Cell(4).GetValue<string>(); break;
-                            case 3: retval.MasErmNetworkModel.name =            row.Cell(2).GetValue<string>(); break;
+                            case 1: retval.MasErmClientModel.name = row.Cell(4).GetValue<string>(); break;
+                            case 3: retval.MasErmNetworkModel.name = row.Cell(2).GetValue<string>(); break;
                             case 4: retval.MasErmNetworkModel.registration_no = row.Cell(2).GetValue<string>(); break;
-                            case 5: retval.MasErmNetworkModel.headaddress1 =    row.Cell(2).GetValue<string>(); break;
-                            case 6: retval.MasErmNetworkModel.consultant =      row.Cell(2).GetValue<string>(); break;
-                            case 7: retval.MasErmNetworkModel.comments =        row.Cell(1).GetValue<string>(); break;
-                            case 8: retval.MasErmNetworkModel.corraddress1 =    row.Cell(2).GetValue<string>(); break;
+                            case 5: retval.MasErmNetworkModel.headaddress1 = row.Cell(2).GetValue<string>(); break;
+                            case 6: retval.MasErmNetworkModel.consultant = row.Cell(2).GetValue<string>(); break;
+                            case 7: retval.MasErmNetworkModel.comments = row.Cell(1).GetValue<string>(); break;
+                            case 8: retval.MasErmNetworkModel.corraddress1 = row.Cell(2).GetValue<string>(); break;
                             case 9: break;
                             case 10: break;
                             case 11:
-                                        int idx = 1;
-                                        string headerValue = String.Empty;
-                                        while (idx <= 36)
-                                        {
-                                            headerValue += row.Cell(idx).GetValue<string>() + ",";
-                                            idx++;
-                                        }
-                                        err = gasHeaderValidation(headerValue);
-                                        break;
+                                int idx = 1;
+                                string headerValue = String.Empty;
+                                while (idx <= 36)
+                                {
+                                    headerValue += row.Cell(idx).GetValue<string>() + ",";
+                                    idx++;
+                                }
+                                err = gasHeaderValidation(headerValue);
+                                break;
                             default: break;
                         }
 
@@ -549,48 +548,48 @@
 
                         if (row.RowNumber() > 11)
                         {
-                            tdgas.id =              0;
-                            tdgas.MasErmTender =    0;
-                            tdgas.Location_Ref =    row.Cell(1).GetValue<string>();
+                            tdgas.id = 0;
+                            tdgas.MasErmTender = 0;
+                            tdgas.Location_Ref = row.Cell(1).GetValue<string>();
 
                             if (tdgas.Location_Ref.Length > 0)
                             {
-                                tdgas.Location_Ref =    row.Cell(1).GetValue<string>().Replace("'", " ");
-                                tdgas.Client_Ref =      row.Cell(2).GetValue<string>().Replace("'", " ");
-                                tdgas.Address1 =        row.Cell(3).GetValue<string>().Replace("'", " ");
-                                tdgas.Address2 =        row.Cell(4).GetValue<string>().Replace("'", " ");
-                                tdgas.Address3 =        row.Cell(5).GetValue<string>().Replace("'", " ");
-                                tdgas.Address4 =        row.Cell(6).GetValue<string>().Replace("'", " ");
-                                tdgas.Address5 =        row.Cell(7).GetValue<string>().Replace("'", " ");
-                                tdgas.Postcode =        row.Cell(8).GetValue<string>().Replace("'", " ");
-                                tdgas.Msn =             row.Cell(9).GetValue<string>().Replace("'", " ");
-                                tdgas.Mprn =            row.Cell(10).GetValue<string>().Replace("'", " ");
-                                tdgas.kWh =             row.Cell(11).GetValue<string>().Replace("'", " ");
-                                tdgas.Startdate =       row.Cell(12).GetValue<string>().Replace("'", " ");
-                                tdgas.Payment_method =  row.Cell(13).GetValue<string>().Replace("'", " ");
-                                tdgas.Payment_duration =    row.Cell(14).GetValue<string>().Replace("'", " ");
-                                tdgas.SuppId =              row.Cell(15).GetValue<string>().Replace("'", " ");
-                                tdgas.Last_bill_date =      row.Cell(16).GetValue<string>().Replace("'", " ");
+                                tdgas.Location_Ref = row.Cell(1).GetValue<string>().Replace("'", " ");
+                                tdgas.Client_Ref = row.Cell(2).GetValue<string>().Replace("'", " ");
+                                tdgas.Address1 = row.Cell(3).GetValue<string>().Replace("'", " ");
+                                tdgas.Address2 = row.Cell(4).GetValue<string>().Replace("'", " ");
+                                tdgas.Address3 = row.Cell(5).GetValue<string>().Replace("'", " ");
+                                tdgas.Address4 = row.Cell(6).GetValue<string>().Replace("'", " ");
+                                tdgas.Address5 = row.Cell(7).GetValue<string>().Replace("'", " ");
+                                tdgas.Postcode = row.Cell(8).GetValue<string>().Replace("'", " ");
+                                tdgas.Msn = row.Cell(9).GetValue<string>().Replace("'", " ");
+                                tdgas.Mprn = row.Cell(10).GetValue<string>().Replace("'", " ");
+                                tdgas.kWh = row.Cell(11).GetValue<string>().Replace("'", " ");
+                                tdgas.Startdate = row.Cell(12).GetValue<string>().Replace("'", " ");
+                                tdgas.Payment_method = row.Cell(13).GetValue<string>().Replace("'", " ");
+                                tdgas.Payment_duration = row.Cell(14).GetValue<string>().Replace("'", " ");
+                                tdgas.SuppId = row.Cell(15).GetValue<string>().Replace("'", " ");
+                                tdgas.Last_bill_date = row.Cell(16).GetValue<string>().Replace("'", " ");
                                 tdgas.Last_bill_date_supp = row.Cell(17).GetValue<string>().Replace("'", " ");
                                 tdgas.Standing_charge_penceperday = row.Cell(18).GetValue<string>().Replace("'", " ");
-                                tdgas.Day_Rate =            row.Cell(19).GetValue<string>().Replace("'", " ");
-                                tdgas.Peak_Decjan =         row.Cell(20).GetValue<string>().Replace("'", " ");
-                                tdgas.Peak_Novfeb =         row.Cell(21).GetValue<string>().Replace("'", " ");
-                                tdgas.Peak_Other =          row.Cell(22).GetValue<string>().Replace("'", " ");
-                                tdgas.Offpeak =             row.Cell(23).GetValue<string>().Replace("'", " ");
-                                tdgas.Other =               row.Cell(24).GetValue<string>().Replace("'", " ");
-                                tdgas.DistCommodity_penceperday =   row.Cell(25).GetValue<string>().Replace("'", " ");
-                                tdgas.MeteringCharge_penceperday =  row.Cell(26).GetValue<string>().Replace("'", " ");
+                                tdgas.Day_Rate = row.Cell(19).GetValue<string>().Replace("'", " ");
+                                tdgas.Peak_Decjan = row.Cell(20).GetValue<string>().Replace("'", " ");
+                                tdgas.Peak_Novfeb = row.Cell(21).GetValue<string>().Replace("'", " ");
+                                tdgas.Peak_Other = row.Cell(22).GetValue<string>().Replace("'", " ");
+                                tdgas.Offpeak = row.Cell(23).GetValue<string>().Replace("'", " ");
+                                tdgas.Other = row.Cell(24).GetValue<string>().Replace("'", " ");
+                                tdgas.DistCommodity_penceperday = row.Cell(25).GetValue<string>().Replace("'", " ");
+                                tdgas.MeteringCharge_penceperday = row.Cell(26).GetValue<string>().Replace("'", " ");
                                 tdgas.DistributionSystemCapacity_penceperday = row.Cell(27).GetValue<string>().Replace("'", " ");
-                                tdgas.ManagementFee_penceprday =    row.Cell(28).GetValue<string>().Replace("'", " ");
-                                tdgas.DistFixed_penceperday =       row.Cell(29).GetValue<string>().Replace("'", " ");
+                                tdgas.ManagementFee_penceprday = row.Cell(28).GetValue<string>().Replace("'", " ");
+                                tdgas.DistFixed_penceperday = row.Cell(29).GetValue<string>().Replace("'", " ");
                                 tdgas.Unidentifiedgas_penceperday = row.Cell(30).GetValue<string>().Replace("'", " ");
-                                tdgas.TransportFee_penceperday =    row.Cell(31).GetValue<string>().Replace("'", " ");
-                                tdgas.AMRCharge_penceperday =       row.Cell(32).GetValue<string>().Replace("'", " ");
+                                tdgas.TransportFee_penceperday = row.Cell(31).GetValue<string>().Replace("'", " ");
+                                tdgas.AMRCharge_penceperday = row.Cell(32).GetValue<string>().Replace("'", " ");
                                 tdgas.DistCustomerCapacity_penceprday = row.Cell(33).GetValue<string>().Replace("'", " ");
-                                tdgas.SiteFee_penceprday =          row.Cell(34).GetValue<string>().Replace("'", " ");
-                                tdgas.Remarks =                     row.Cell(35).GetValue<string>().Replace("'", " ");
-                                tdgas.ERMRemarks =                  row.Cell(36).GetValue<string>().Replace("'", " ");
+                                tdgas.SiteFee_penceprday = row.Cell(34).GetValue<string>().Replace("'", " ");
+                                tdgas.Remarks = row.Cell(35).GetValue<string>().Replace("'", " ");
+                                tdgas.ERMRemarks = row.Cell(36).GetValue<string>().Replace("'", " ");
 
                                 retval.TrnERMTenderDetailsGAS.Add(tdgas);
 
@@ -606,9 +605,9 @@
             {
                 Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
                 Console.WriteLine(ex.ToString());
-                errMessage =            ex.Message.ToString();
+                errMessage = ex.Message.ToString();
                 retval.successMessage = null;
-                retval.errMessage =     errMessage;
+                retval.errMessage = errMessage;
 
             }
             return (retval.successMessage != null ? cleanseData_3(retval) : retval);
@@ -640,9 +639,10 @@
             return res;
         }
 
+        //EDF
         public static List<edfModel> ReadExcelFileEDF(string filefullpath)
         {
-            string errMessage =     String.Empty;
+            string errMessage = String.Empty;
             List<edfModel> retval = new List<edfModel>();
 
             try
@@ -660,6 +660,9 @@
                     {
                         if (row.RowNumber() > 1)
                         {
+                            int months_calc = GetMonthsDifference(Convert.ToDateTime(row.Cell(7).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(6).GetValue<string>().Trim()));
+
                             retval.Add(new edfModel {
                                 QuoteID = row.Cell(1).GetValue<string>().Replace("'", " "),
                                 Revision = row.Cell(2).GetValue<string>().Replace("'", " "),
@@ -831,6 +834,7 @@
                                 MeterGroup = row.Cell(168).GetValue<string>().Replace("'", " "),
                                 SSC = row.Cell(169).GetValue<string>().Replace("'", " "),
                                 TCRBand = row.Cell(170).GetValue<string>().Replace("'", " "),
+                                noofMonths = months_calc,
                             });
                         }
                     }
@@ -846,6 +850,197 @@
             return retval;
         }
 
+        //SSE
+        public static List<sseElec1Model> ReadExcelFileSSEElec1(string filefullpath)
+        {
+            string errMessage =          String.Empty;
+            List<sseElec1Model> retval = new List<sseElec1Model>();
+
+            try
+            {
+                using (var workbook = new XLWorkbook(filefullpath))
+                {
+                    var worksheet =     workbook.Worksheet(1);
+                    var rows =          worksheet.RangeUsed().RowsUsed();
+                    List<string> err =  new List<string>();
+
+                    string quotationid = String.Empty;
+
+                    foreach (var row in rows)
+                    {
+                        if (row.RowNumber() == 1)
+                        {
+                            quotationid =       row.Cell(2).GetValue<string>().Replace("'", " ");
+                        }
+
+                        if (row.RowNumber() == 2)
+                        {
+                            int cc = worksheet.RangeUsed().ColumnCount();
+
+                            if ( worksheet.RangeUsed().ColumnCount() != 31)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (row.RowNumber() > 2)
+                        {
+                            string v1 =         row.Cell(5).GetValue<string>().Trim();
+                            string v2 =         row.Cell(4).GetValue<string>().Trim();
+
+                            int months_calc =   GetMonthsDifference(Convert.ToDateTime(row.Cell(5).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(4).GetValue<string>().Trim()));
+
+                            retval.Add(new sseElec1Model
+                            {
+                                QuotationID =                   quotationid,
+                                CommercialAgreementID =         row.Cell(1).GetValue<string>().Replace("'", " "),
+                                DeliveryAgreementID =           row.Cell(2).GetValue<string>().Replace("'", " "),
+                                QuoteLevel =                    row.Cell(3).GetValue<string>().Replace("'", " "),
+                                ContractStartDate =             row.Cell(4).GetValue<string>().Replace("'", " "),
+                                ContractEndDate =               row.Cell(5).GetValue<string>().Replace("'", " "),
+                                Term =                          row.Cell(6).GetValue<string>().Replace("'", " "),
+                                CustomerID =                    row.Cell(7).GetValue<string>().Replace("'", " "),
+                                CustomerName =                  row.Cell(8).GetValue<string>().Replace("'", " "),
+                                SiteAddress =                   row.Cell(9).GetValue<string>().Replace("'", " "),
+                                ProfileClass =                  row.Cell(10).GetValue<string>().Replace("'", " "),
+                                MTC =                           row.Cell(11).GetValue<string>().Replace("'", " "),
+                                SSC =                           row.Cell(12).GetValue<string>().Replace("'", " "),
+                                LLF =                           row.Cell(13).GetValue<string>().Replace("'", " "),
+                                MPAN =                          row.Cell(14).GetValue<string>().Replace("'", " "),
+                                VoltageClassification =         row.Cell(15).GetValue<string>().Replace("'", " "),
+                                MeasurementClass =              row.Cell(16).GetValue<string>().Replace("'", " "),
+                                Tariff =                        row.Cell(17).GetValue<string>().Replace("'", " "),
+                                ProductType =                   row.Cell(18).GetValue<string>().Replace("'", " "),
+                                EnergyType =                    row.Cell(19).GetValue<string>().Replace("'", " "),
+                                MeterType =                     row.Cell(20).GetValue<string>().Replace("'", " "),
+                                StandingChargepday =            row.Cell(21).GetValue<string>().Replace("'", " "),
+                                UnrestrictedpkWh =              row.Cell(22).GetValue<string>().Replace("'", " "),
+                                Unrestricted =                  row.Cell(23).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepkWh =   row.Cell(24).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepday =   row.Cell(25).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepkWh = row.Cell(26).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepday = row.Cell(27).GetValue<string>().Replace("'", " "),
+                                DDDiscountterm =                row.Cell(28).GetValue<string>().Replace("'", " "),
+                                TermConsumptionkWh =            row.Cell(29).GetValue<string>().Replace("'", " "),
+                                AnnualConsumptionkWh =          row.Cell(30).GetValue<string>().Replace("'", " "),
+                                TotalCost =                     row.Cell(31).GetValue<string>().Replace("'", " "),
+                                noofMonths =                    months_calc,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                errMessage = ex.Message.ToString();
+            }
+
+            return retval;
+        }
+
+        //SSE
+        public static List<sseElec2Model> ReadExcelFileSSEElec2(string filefullpath)
+        {
+            string errMessage = String.Empty;
+            List<sseElec2Model> retval = new List<sseElec2Model>();
+
+            try
+            {
+                using (var workbook = new XLWorkbook(filefullpath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    var rows = worksheet.RangeUsed().RowsUsed();
+                    List<string> err = new List<string>();
+
+                    string quotationid = String.Empty;
+
+                    foreach (var row in rows)
+                    {
+                        if (row.RowNumber() == 1)
+                        {
+                            quotationid = row.Cell(2).GetValue<string>().Replace("'", " ");
+                        }
+
+                        if (row.RowNumber() == 2)
+                        {
+                            if (worksheet.RangeUsed().ColumnCount() != 39)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (row.RowNumber() > 2)
+                        {
+                            string v1 = row.Cell(5).GetValue<string>().Trim();
+                            string v2 = row.Cell(4).GetValue<string>().Trim();
+
+                            int months_calc = GetMonthsDifference(Convert.ToDateTime(row.Cell(5).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(4).GetValue<string>().Trim()));
+
+                            retval.Add(new sseElec2Model
+                            {
+                                QuotationID = quotationid,
+                                CommercialAgreementID = row.Cell(1).GetValue<string>().Replace("'", " "),
+                                DeliveryAgreementID = row.Cell(2).GetValue<string>().Replace("'", " "),
+                                QuoteLevel = row.Cell(3).GetValue<string>().Replace("'", " "),
+                                ContractStartDate = row.Cell(4).GetValue<string>().Replace("'", " "),
+                                ContractEndDate = row.Cell(5).GetValue<string>().Replace("'", " "),
+                                Term = row.Cell(6).GetValue<string>().Replace("'", " "),
+                                CustomerID = row.Cell(7).GetValue<string>().Replace("'", " "),
+                                CustomerName = row.Cell(8).GetValue<string>().Replace("'", " "),
+                                SiteAddress = row.Cell(9).GetValue<string>().Replace("'", " "),
+                                ProfileClass = row.Cell(10).GetValue<string>().Replace("'", " "),
+                                MTC = row.Cell(11).GetValue<string>().Replace("'", " "),
+                                SSC = row.Cell(12).GetValue<string>().Replace("'", " "),
+                                LLF = row.Cell(13).GetValue<string>().Replace("'", " "),
+                                MPAN = row.Cell(14).GetValue<string>().Replace("'", " "),
+                                VoltageClassification = row.Cell(15).GetValue<string>().Replace("'", " "),
+                                MeasurementClass = row.Cell(16).GetValue<string>().Replace("'", " "),
+                                Tariff = row.Cell(17).GetValue<string>().Replace("'", " "),
+                                ProductType = row.Cell(18).GetValue<string>().Replace("'", " "),
+                                EnergyType = row.Cell(19).GetValue<string>().Replace("'", " "),
+                                MeterType = row.Cell(20).GetValue<string>().Replace("'", " "),
+                                StandingChargepday = row.Cell(21).GetValue<string>().Replace("'", " "),
+                                DaypkWh = row.Cell(22).GetValue<string>().Replace("'", " "),
+                                EveningweekendandnightpkWh = row.Cell(23).GetValue<string>().Replace("'", " "),
+                                NightpkWh = row.Cell(24).GetValue<string>().Replace("'", " "),
+                                UnrestrictedpkWh = row.Cell(25).GetValue<string>().Replace("'", " "),
+                                WeekdaypkWh = row.Cell(26).GetValue<string>().Replace("'", " "),
+                                Day = row.Cell(27).GetValue<string>().Replace("'", " "),
+                                Eveningweekendandnight = row.Cell(28).GetValue<string>().Replace("'", " "),
+                                Night = row.Cell(29).GetValue<string>().Replace("'", " "),
+                                Unrestricted = row.Cell(30).GetValue<string>().Replace("'", " "),
+                                Weekday = row.Cell(31).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepkWh = row.Cell(32).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepday = row.Cell(33).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepkWh = row.Cell(34).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepday = row.Cell(35).GetValue<string>().Replace("'", " "),
+                                DDDiscountterm = row.Cell(36).GetValue<string>().Replace("'", " "),
+                                TermConsumptionkWh = row.Cell(37).GetValue<string>().Replace("'", " "),
+                                AnnualConsumptionkWh = row.Cell(38).GetValue<string>().Replace("'", " "),
+                                TotalCost = row.Cell(39).GetValue<string>().Replace("'", " "),
+
+                                noofMonths = months_calc,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
+                Console.WriteLine(ex.ToString());
+                errMessage = ex.Message.ToString();
+            }
+
+            return retval;
+        }
+
+        public static int GetMonthsDifference(DateTime startDate, DateTime endDate)
+        {
+            return Math.Abs(((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month);
+        }
 
         public static int updatepriceloader(string filepath, List<edfModel> model)
         {
@@ -881,7 +1076,7 @@
             }
             catch (System.Exception ex)
             {
-                
+
             }
 
             return irow;
@@ -906,7 +1101,7 @@
 
                 book.CalculateFormula();
 
-                for (int row = 2; row <= (stoprun-1); row++)
+                for (int row = 2; row <= (stoprun - 1); row++)
                 {
                     // Read a cell
                     Aspose.Cells.Cell valueA1 = sheet.Cells["C" + row];
@@ -929,6 +1124,334 @@
             return scModel;
 
         }
+
+
+        //EDF
+        public static int updateAnalysisTemplate(string filepath, string tenderid, List<edfModel> client, string energytype, string supplier, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            StreamWriter sw = new StreamWriter("analysis.log");
+            try
+            {
+                #region read_details
+                viewERMTenderModel ermDetails = new viewERMTenderModel();
+                getSql getSql = new getSql();
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+                #endregion
+
+                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
+                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
+                                         "Gas";
+
+                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
+
+                sw.WriteLine(energytype);
+                sw.WriteLine(supplier);
+
+                sw.WriteLine(curr_supplytype);
+                sw.WriteLine(curr_supplier);
+
+
+                //if (energytype == curr_supplytype && supplier == curr_supplytype)
+                {
+                    sw.WriteLine(filepath);
+
+                    int supplytype_count = client.Where(x => x.MeterGroup == curr_supplytype).Count();
+
+                    sw.WriteLine("supplytype_count : " + supplytype_count);
+
+                    //if (supplytype_count > 0)
+                    {
+                        sw.WriteLine(filepath);
+
+                        string source_path =    filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
+                        source_path =           source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+                        string destin_path =    filepath.Replace("Analysis", "Analysis\\Temp");
+                        destin_path =           destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+                        //string version_path =   filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
+                        //version_path =          version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\Analysis_Template_2026.xlsx";
+
+                        sw.WriteLine(source_path);
+                        sw.WriteLine(destin_path);
+
+                        if (File.Exists(destin_path))
+                        {
+                            File.Delete(destin_path);
+                        }
+
+                        File.Copy(source_path, destin_path);
+
+                        using (var workbook = new XLWorkbook(destin_path))
+                        {
+                            var worksheet = workbook.Worksheet("Summary Info");
+
+                            worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
+                            worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
+                            worksheet.Cells("AD3").Value = "<contractrenewaldate>";
+                            worksheet.Cells("AD4").Value = "<v1>";
+
+                            worksheet.Cells("AD11").Value = curr_supplier;
+                            worksheet.Cells("AG11").Value = getFuelname(ermDetails.ermTender.fueltype);
+                            string payterm =                ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                            worksheet.Cells("AH11").Value = payterm;
+                            worksheet.Cells("AI11").Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+                          
+                            var Analysis_wks = workbook.Worksheet("Analysis");
+                            int strowIdx = 10;
+                            int stcolIdx = 2;
+
+                            if (ermDetails != null)
+                            {
+                                if (energytype.Equals("HH") || energytype.Equals("NHH"))
+                                {
+                                    if (ermDetails.ermDetailNHH != null)
+                                    {
+                                        foreach (var item in ermDetails.ermDetailNHH)
+                                        {
+                                            stcolIdx = 2;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Supplier.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
+                                            stcolIdx = stcolIdx + 11;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString(); stcolIdx++;
+
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString(); stcolIdx++;
+
+                                            strowIdx++;
+                                        }
+                                    }
+                                }
+                            }
+
+                            workbook.Save();
+                        }
+                    }
+                }
+
+                retval = 1;
+            }
+            catch (Exception ex)
+            {
+                sw.WriteLine(ex.Message);
+            }
+
+            sw.Close();
+            return retval;
+        }
+
+
+        //SSE
+        public static int updateAnalysisTemplateNew(string filepath, string tenderid, List<sseSCModel> scModel, string energytype, string supplier, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            try
+            {
+                #region read_details
+                viewERMTenderModel ermDetails = new viewERMTenderModel();
+                getSql getSql = new getSql();
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+                #endregion
+
+                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
+                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
+                                         "Gas";
+
+                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
+
+                {
+
+                    string source_path = filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
+                    source_path = source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+                    string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
+                    destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+
+                    if (File.Exists(destin_path))
+                    {
+                        File.Delete(destin_path);
+                    }
+
+                    File.Copy(source_path, destin_path);
+
+                    using (var workbook = new XLWorkbook(destin_path))
+                    {
+                        var worksheet = workbook.Worksheet("Summary Info");
+
+                        worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
+                        worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
+                        worksheet.Cells("AD3").Value = "<contractrenewaldate>";
+                        worksheet.Cells("AD4").Value = "<v1>";
+
+                        worksheet.Cells("AD11").Value = curr_supplier;
+                        worksheet.Cells("AG11").Value = getFuelname(ermDetails.ermTender.fueltype);
+                        string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                            ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                        worksheet.Cells("AH11").Value = payterm;
+                        worksheet.Cells("AI11").Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                        var Analysis_wks = workbook.Worksheet("Analysis");
+                        int strowIdx = 10;
+                        int stcolIdx = 2;
+
+                        if (ermDetails != null)
+                        {
+                            if (energytype.Equals("HH") || energytype.Equals("NHH"))
+                            {
+                                if (ermDetails.ermDetailNHH != null)
+                                {
+                                    foreach (var item in ermDetails.ermDetailNHH)
+                                    {
+                                        stcolIdx = 2;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Supplier.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
+                                        stcolIdx = stcolIdx + 11;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString(); stcolIdx++;
+
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString(); stcolIdx++;
+
+                                        strowIdx++;
+                                    }
+
+                                    strowIdx = 10;
+                                    foreach (var item in scModel)
+                                    {
+                                        stcolIdx = 35;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.day.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.night.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.evening.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.avail_charge.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.standing_charge.ToString(); stcolIdx++;
+                                        strowIdx++;
+                                    }
+
+                                }
+                            }
+                        }
+
+                        workbook.Save();
+                    }
+                }
+
+                retval = 1;
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return retval;
+        }
+
+        public static string getFuelname(string fueltype)
+        {
+            string fuel = String.Empty;
+            try
+            {
+                if (fueltype.Length > 0)
+                {
+                    if (fueltype.Substring(0, 2) == "BR")
+                    {
+                        fuel = "Brown";
+                    }
+
+                    if (fueltype.Substring(2, 2) == "GR")
+                    {
+                        fuel += ", Green";
+                    }
+
+                    if (fueltype.Substring(4, 2) == "CA")
+                    {
+                        fuel += ", Carbon Zero Gas - Ecotricity";
+                    }
+
+                    if (fueltype.Substring(6, 2) == "SG")
+                    {
+                        fuel += ", Select Green";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return fuel;
+        }
+
 
     }
 }

@@ -16,7 +16,7 @@ namespace DotNet8.WebApi.Controllers
 
         [HttpGet]
         [Route("readData")]// Matches GET requests to /Tender
-        public IActionResult readData([FromQuery] string filepath)
+        public IActionResult readData([FromQuery] string filepath, string tenderid, string type, string supplier)
         {
 
             engineXLSX engineXLSX =     new engineXLSX();
@@ -41,6 +41,8 @@ namespace DotNet8.WebApi.Controllers
 
                 edf.Add(em);
             }
+
+            int retval = engineXLSX.updateAnalysisTemplate(filepath, tenderid, edf, type, supplier, configuration);
 
             return Ok(edf);
         }

@@ -176,6 +176,7 @@
 
         //custom
         public string? calc_sccharge { get; set; }
-
+        public int? noofMonths { get; set; }
     }
+
 }
