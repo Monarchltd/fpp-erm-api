@@ -467,5 +467,59 @@ namespace DotNet8.WebApi.Factory.Utilities
 
             return supplier.name;
         }
+
+        public static List<ErmAnalysisHeader> getAnalysisHeader(string id, IConfiguration configuration)
+        {
+            string excpMessage = String.Empty;
+            string sql =         String.Empty;
+            sql =                "SELECT * FROM [dbo].[ErmAnalysisHeader] WHERE MasErmTender = '" + id + "' and [IsActive] = 1";
+            List<ErmAnalysisHeader> data = new List<ErmAnalysisHeader>();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection())
+                {
+                    connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                    connection.Open();
+
+                    int fieldPlcHolder = 0;
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        using (SqlDataReader reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                fieldPlcHolder = 0;
+
+                                data.Add(new ErmAnalysisHeader {
+                                    id = reader.GetInt64(fieldPlcHolder),
+                                    MasErmTender = reader.GetInt64(++fieldPlcHolder).ToString(),
+                                    tenderref = reader.GetString(++fieldPlcHolder),
+                                    version = reader.GetInt32(++fieldPlcHolder).ToString(),
+                                    reportTyoe = reader.GetInt32(++fieldPlcHolder).ToString(),
+                                    filename = reader.GetString(++fieldPlcHolder),
+                                    cusr = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
+                                    cdte = !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
+                                    uusr = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
+                                    udte = !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
+                                    isActive = reader.GetInt32(++fieldPlcHolder)
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                excpMessage = e.Message;
+            }
+            finally
+            {
+
+            }
+
+            return data;
+        }
+
     }
 }

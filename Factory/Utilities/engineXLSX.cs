@@ -8,6 +8,9 @@
     using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using DotNet8.WebApi.Factory.Model.sse;
+    using Org.BouncyCastle.Asn1.Cmp;
+    using System.Linq;
+    using DocumentFormat.OpenXml.Office2010.Excel;
 
     public class engineXLSX
     {
@@ -639,6 +642,10 @@
             return res;
         }
 
+        //ANALYSIS TEMPLATE CODE
+        //
+
+        #region EDF
         //EDF
         public static List<edfModel> ReadExcelFileEDF(string filefullpath)
         {
@@ -850,7 +857,167 @@
             return retval;
         }
 
-        //SSE
+        //EDF GAS
+        public static List<edfGasModel> ReadExcelFileEDFGas(string filefullpath)
+        {
+            string errMessage = String.Empty;
+            List<edfGasModel> retval = new List<edfGasModel>();
+
+            try
+            {
+                using (var workbook = new XLWorkbook(filefullpath))
+                {
+
+                    var worksheet = workbook.Worksheet(1);
+
+                    var rows = worksheet.RangeUsed().RowsUsed();
+
+                    List<string> err = new List<string>();
+
+                    foreach (var row in rows)
+                    {
+                        if (row.RowNumber() > 1)
+                        {
+                            int months_calc = GetMonthsDifference(Convert.ToDateTime(row.Cell(7).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(6).GetValue<string>().Trim()));
+
+                            retval.Add(new edfGasModel
+                            {
+                                QuoteID = row.Cell(1).GetValue<string>().Replace("'", " "),
+                                QuoteRevision = row.Cell(2).GetValue<string>().Replace("'", " "),
+                                PrimaryRequestor = row.Cell(3).GetValue<string>().Replace("'", " "),
+                                SecondaryRequestor = row.Cell(4).GetValue<string>().Replace("'", " "),
+                                TertiaryRequestor = row.Cell(5).GetValue<string>().Replace("'", " "),
+                                EarliestSupplyStartDate = row.Cell(6).GetValue<string>().Replace("'", " "),
+                                EarliestTerminationDate = row.Cell(7).GetValue<string>().Replace("'", " "),
+                                YourReference = row.Cell(8).GetValue<string>().Replace("'", " "),
+                                CR = row.Cell(9).GetValue<string>().Replace("'", " "),
+                                CustomerName = row.Cell(10).GetValue<string>().Replace("'", " "),
+                                ContactName = row.Cell(11).GetValue<string>().Replace("'", " "),
+                                CompanyRegisteredNumber = row.Cell(12).GetValue<string>().Replace("'", " "),
+                                RegisteredAddress1 = row.Cell(13).GetValue<string>().Replace("'", " "),
+                                RegisteredAddress2 = row.Cell(14).GetValue<string>().Replace("'", " "),
+                                RegisteredAddress3 = row.Cell(15).GetValue<string>().Replace("'", " "),
+                                RegisteredAddressTown = row.Cell(16).GetValue<string>().Replace("'", " "),
+                                RegisteredCounty = row.Cell(17).GetValue<string>().Replace("'", " "),
+                                RegisteredPostcode = row.Cell(18).GetValue<string>().Replace("'", " "),
+                                BillingAddress1 = row.Cell(19).GetValue<string>().Replace("'", " "),
+                                BillingAddress2 = row.Cell(20).GetValue<string>().Replace("'", " "),
+                                BillingAddress3 = row.Cell(21).GetValue<string>().Replace("'", " "),
+                                BillingAddressTown = row.Cell(22).GetValue<string>().Replace("'", " "),
+                                BillingCounty = row.Cell(23).GetValue<string>().Replace("'", " "),
+                                BillingPostcode = row.Cell(24).GetValue<string>().Replace("'", " "),
+                                SiteAddress1 = row.Cell(25).GetValue<string>().Replace("'", " "),
+                                SiteAddress2 = row.Cell(26).GetValue<string>().Replace("'", " "),
+                                SiteAddress3 = row.Cell(27).GetValue<string>().Replace("'", " "),
+                                SiteAddressTown = row.Cell(28).GetValue<string>().Replace("'", " "),
+                                SiteCounty = row.Cell(29).GetValue<string>().Replace("'", " "),
+                                SitePostcode = row.Cell(30).GetValue<string>().Replace("'", " "),
+                                EDFEnergyGroupReference = row.Cell(31).GetValue<string>().Replace("'", " "),
+                                PricePoint = row.Cell(32).GetValue<string>().Replace("'", " "),
+                                BillingCycle = row.Cell(33).GetValue<string>().Replace("'", " "),
+                                PaymentMethod = row.Cell(34).GetValue<string>().Replace("'", " "),
+                                PaymentPeriod = row.Cell(35).GetValue<string>().Replace("'", " "),
+                                PremiseID = row.Cell(36).GetValue<string>().Replace("'", " "),
+                                MPRN = row.Cell(37).GetValue<string>().Replace("'", " "),
+                                FormulaAQkWh = row.Cell(38).GetValue<string>().Replace("'", " "),
+                                RollingAQkWh = row.Cell(39).GetValue<string>().Replace("'", " "),
+                                CustomerAQkWh = row.Cell(40).GetValue<string>().Replace("'", " "),
+                                AQUsed = row.Cell(41).GetValue<string>().Replace("'", " "),
+                                LocalDistributionZoneLDZ = row.Cell(42).GetValue<string>().Replace("'", " "),
+                                ExitZone = row.Cell(43).GetValue<string>().Replace("'", " "),
+                                DailyMeteredNonDailyMetered = row.Cell(44).GetValue<string>().Replace("'", " "),
+                                MonthlyRead = row.Cell(45).GetValue<string>().Replace("'", " "),
+                                EndUserCategory = row.Cell(46).GetValue<string>().Replace("'", " "),
+                                SOQFormulakWhday = row.Cell(47).GetValue<string>().Replace("'", " "),
+                                SOQRollingkWhday = row.Cell(48).GetValue<string>().Replace("'", " "),
+                                AMRIndicator = row.Cell(49).GetValue<string>().Replace("'", " "),
+                                MeterType = row.Cell(50).GetValue<string>().Replace("'", " "),
+                                ImperialIndicator = row.Cell(51).GetValue<string>().Replace("'", " "),
+                                MeterCapacityscmhorscfh = row.Cell(52).GetValue<string>().Replace("'", " "),
+                                MeterMechanism = row.Cell(53).GetValue<string>().Replace("'", " "),
+                                Converter = row.Cell(54).GetValue<string>().Replace("'", " "),
+                                GasSource = row.Cell(55).GetValue<string>().Replace("'", " "),
+                                PriceStructureDescription = row.Cell(56).GetValue<string>().Replace("'", " "),
+                                PriceStructureCode = row.Cell(57).GetValue<string>().Replace("'", " "),
+                                StandingChargeRate = row.Cell(58).GetValue<string>().Replace("'", " "),
+                                StandingChargeUOM = row.Cell(59).GetValue<string>().Replace("'", " "),
+                                StandingChargeCostPence = row.Cell(60).GetValue<string>().Replace("'", " "),
+                                RateCount = row.Cell(61).GetValue<string>().Replace("'", " "),
+                                Rate1Description = row.Cell(62).GetValue<string>().Replace("'", " "),
+                                Rate1Value = row.Cell(63).GetValue<string>().Replace("'", " "),
+                                Rate1UOM = row.Cell(64).GetValue<string>().Replace("'", " "),
+                                Rate1UsagekWh = row.Cell(65).GetValue<string>().Replace("'", " "),
+                                Rate1CostPence = row.Cell(66).GetValue<string>().Replace("'", " "),
+                                Rate2Description = row.Cell(67).GetValue<string>().Replace("'", " "),
+                                Rate2Value = row.Cell(68).GetValue<string>().Replace("'", " "),
+                                Rate2UOM = row.Cell(69).GetValue<string>().Replace("'", " "),
+                                Rate2UsagekWh = row.Cell(70).GetValue<string>().Replace("'", " "),
+                                Rate2CostPence = row.Cell(71).GetValue<string>().Replace("'", " "),
+                                Rate3Description = row.Cell(72).GetValue<string>().Replace("'", " "),
+                                Rate3Value = row.Cell(73).GetValue<string>().Replace("'", " "),
+                                Rate3UOM = row.Cell(74).GetValue<string>().Replace("'", " "),
+                                Rate3UsagekWh = row.Cell(75).GetValue<string>().Replace("'", " "),
+                                Rate3CostPence = row.Cell(76).GetValue<string>().Replace("'", " "),
+                                Rate4Description = row.Cell(77).GetValue<string>().Replace("'", " "),
+                                Rate4Value = row.Cell(78).GetValue<string>().Replace("'", " "),
+                                Rate4UOM = row.Cell(79).GetValue<string>().Replace("'", " "),
+                                Rate4UsagekWh = row.Cell(80).GetValue<string>().Replace("'", " "),
+                                Rate4CostPence = row.Cell(81).GetValue<string>().Replace("'", " "),
+                                Rate5Description = row.Cell(82).GetValue<string>().Replace("'", " "),
+                                Rate5Value = row.Cell(83).GetValue<string>().Replace("'", " "),
+                                Rate5UOM = row.Cell(84).GetValue<string>().Replace("'", " "),
+                                Rate5UsagekWh = row.Cell(85).GetValue<string>().Replace("'", " "),
+                                Rate5CostPence = row.Cell(86).GetValue<string>().Replace("'", " "),
+                                Rate6Description = row.Cell(87).GetValue<string>().Replace("'", " "),
+                                Rate6Value = row.Cell(88).GetValue<string>().Replace("'", " "),
+                                Rate6UOM = row.Cell(89).GetValue<string>().Replace("'", " "),
+                                Rate6UsagekWh = row.Cell(90).GetValue<string>().Replace("'", " "),
+                                Rate6CostPence = row.Cell(91).GetValue<string>().Replace("'", " "),
+                                Rate7Description = row.Cell(92).GetValue<string>().Replace("'", " "),
+                                Rate7Value = row.Cell(93).GetValue<string>().Replace("'", " "),
+                                Rate7UOM = row.Cell(94).GetValue<string>().Replace("'", " "),
+                                Rate7UsagekWh = row.Cell(95).GetValue<string>().Replace("'", " "),
+                                Rate7CostPence = row.Cell(96).GetValue<string>().Replace("'", " "),
+                                Rate8Description = row.Cell(97).GetValue<string>().Replace("'", " "),
+                                Rate8Value = row.Cell(98).GetValue<string>().Replace("'", " "),
+                                Rate8UOM = row.Cell(99).GetValue<string>().Replace("'", " "),
+                                Rate8UsagekWh = row.Cell(100).GetValue<string>().Replace("'", " "),
+                                Rate8CostPence = row.Cell(101).GetValue<string>().Replace("'", " "),
+                                Rate9Description = row.Cell(102).GetValue<string>().Replace("'", " "),
+                                Rate9Value = row.Cell(103).GetValue<string>().Replace("'", " "),
+                                Rate9UOM = row.Cell(104).GetValue<string>().Replace("'", " "),
+                                Rate9UsagekWh = row.Cell(105).GetValue<string>().Replace("'", " "),
+                                Rate9CostPence = row.Cell(106).GetValue<string>().Replace("'", " "),
+                                Rate10Description = row.Cell(107).GetValue<string>().Replace("'", " "),
+                                Rate10Value = row.Cell(108).GetValue<string>().Replace("'", " "),
+                                Rate10UOM = row.Cell(109).GetValue<string>().Replace("'", " "),
+                                Rate10UsagekWh = row.Cell(110).GetValue<string>().Replace("'", " "),
+                                Rate10CostPence = row.Cell(111).GetValue<string>().Replace("'", " "),
+                                QuoteDate = row.Cell(112).GetValue<string>().Replace("'", " "),
+                                SiteFeeRate = row.Cell(113).GetValue<string>().Replace("'", " "),
+                                SiteFeeUOM = row.Cell(114).GetValue<string>().Replace("'", " "),
+                                SmartMeter = row.Cell(115).GetValue<string>().Replace("'", " "),
+
+                                noofMonths = months_calc,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
+                Console.WriteLine(ex.ToString());
+                errMessage = ex.Message.ToString();
+            }
+
+            return retval;
+        }
+        #endregion EDF
+
+        #region SSE
+        //SSE ELEC MODEL1
         public static List<sseElec1Model> ReadExcelFileSSEElec1(string filefullpath)
         {
             string errMessage =          String.Empty;
@@ -939,7 +1106,7 @@
             return retval;
         }
 
-        //SSE
+        //SSE ELEC MODEL2
         public static List<sseElec2Model> ReadExcelFileSSEElec2(string filefullpath)
         {
             string errMessage = String.Empty;
@@ -1037,6 +1204,1257 @@
             return retval;
         }
 
+        //SSE ELEC MODEL3
+        public static List<sseElec3Model> ReadExcelFileSSEElec3(string filefullpath)
+        {
+            string errMessage = String.Empty;
+            List<sseElec3Model> retval = new List<sseElec3Model>();
+
+            try
+            {
+                using (var workbook = new XLWorkbook(filefullpath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    var rows =      worksheet.RangeUsed().RowsUsed();
+                    List<string> err = new List<string>();
+
+                    string quotationid = String.Empty;
+
+                    foreach (var row in rows)
+                    {
+                        if (row.RowNumber() == 1)
+                        {
+                            quotationid = row.Cell(2).GetValue<string>().Replace("'", " ");
+                        }
+
+                        if (row.RowNumber() == 2)
+                        {
+                            if (worksheet.RangeUsed().ColumnCount() != 36)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (row.RowNumber() > 2)
+                        {
+                            string v1 = row.Cell(5).GetValue<string>().Trim();
+                            string v2 = row.Cell(4).GetValue<string>().Trim();
+
+                            int months_calc = GetMonthsDifference(Convert.ToDateTime(row.Cell(5).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(4).GetValue<string>().Trim()));
+
+                            retval.Add(new sseElec3Model
+                            {
+                                QuotationID = quotationid,
+                                CommercialAgreementID = row.Cell(1).GetValue<string>().Replace("'", " "),
+                                DeliveryAgreementID = row.Cell(2).GetValue<string>().Replace("'", " "),
+                                QuoteLevel = row.Cell(3).GetValue<string>().Replace("'", " "),
+                                ContractStartDate = row.Cell(4).GetValue<string>().Replace("'", " "),
+                                ContractEndDate = row.Cell(5).GetValue<string>().Replace("'", " "),
+                                Term = row.Cell(6).GetValue<string>().Replace("'", " "),
+                                CustomerID = row.Cell(7).GetValue<string>().Replace("'", " "),
+                                CustomerName = row.Cell(8).GetValue<string>().Replace("'", " "),
+                                SiteAddress = row.Cell(9).GetValue<string>().Replace("'", " "),
+                                ProfileClass = row.Cell(10).GetValue<string>().Replace("'", " "),
+                                MTC = row.Cell(11).GetValue<string>().Replace("'", " "),
+                                SSC = row.Cell(12).GetValue<string>().Replace("'", " "),
+                                LLF = row.Cell(13).GetValue<string>().Replace("'", " "),
+                                MPAN = row.Cell(14).GetValue<string>().Replace("'", " "),
+                                VoltageClassification = row.Cell(15).GetValue<string>().Replace("'", " "),
+                                MeasurementClass = row.Cell(16).GetValue<string>().Replace("'", " "),
+                                AgreedSupplyCapacity = row.Cell(17).GetValue<string>().Replace("'", " "),
+                                AgreedSupplyCapacityChargepKVAday = row.Cell(18).GetValue<string>().Replace("'", " "),
+                                Tariff = row.Cell(19).GetValue<string>().Replace("'", " "),
+                                ProductType = row.Cell(20).GetValue<string>().Replace("'", " "),
+                                EnergyType = row.Cell(21).GetValue<string>().Replace("'", " "),
+                                MeterType = row.Cell(22).GetValue<string>().Replace("'", " "),
+                                StandingChargepday = row.Cell(23).GetValue<string>().Replace("'", " "),
+                                DaypkWh = row.Cell(24).GetValue<string>().Replace("'", " "),
+                                NightpkWh = row.Cell(25).GetValue<string>().Replace("'", " "),
+                                Day = row.Cell(26).GetValue<string>().Replace("'", " "),
+                                Night = row.Cell(27).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepkWh = row.Cell(28).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepday = row.Cell(29).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepkWh = row.Cell(30).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepday = row.Cell(31).GetValue<string>().Replace("'", " "),
+                                DDDiscountpkWh = row.Cell(32).GetValue<string>().Replace("'", " "),
+                                DDDiscountterm = row.Cell(33).GetValue<string>().Replace("'", " "),
+                                TermConsumptionkWh = row.Cell(34).GetValue<string>().Replace("'", " "),
+                                AnnualConsumptionkWh = row.Cell(35).GetValue<string>().Replace("'", " "),
+                                TotalCost = row.Cell(36).GetValue<string>().Replace("'", " "),
+                                noofMonths = months_calc,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
+                Console.WriteLine(ex.ToString());
+                errMessage = ex.Message.ToString();
+            }
+
+            return retval;
+        }
+
+        //SSE GAS
+        public static List<sseGasModel> ReadExcelFileSSEGas(string filefullpath)
+        {
+            string errMessage = String.Empty;
+            List<sseGasModel> retval = new List<sseGasModel>();
+
+            try
+            {
+                using (var workbook = new XLWorkbook(filefullpath))
+                {
+                    var worksheet = workbook.Worksheet(1);
+                    var rows = worksheet.RangeUsed().RowsUsed();
+                    List<string> err = new List<string>();
+
+                    string quotationid = String.Empty;
+
+                    foreach (var row in rows)
+                    {
+                        if (row.RowNumber() == 1)
+                        {
+                            quotationid = row.Cell(2).GetValue<string>().Replace("'", " ");
+                        }
+
+                        if (row.RowNumber() == 2)
+                        {
+                            if (worksheet.RangeUsed().ColumnCount() != 23)
+                            {
+                                break;
+                            }
+                        }
+
+                        if (row.RowNumber() > 2)
+                        {
+                            string v1 = row.Cell(5).GetValue<string>().Trim();
+                            string v2 = row.Cell(4).GetValue<string>().Trim();
+
+                            int months_calc = GetMonthsDifference(Convert.ToDateTime(row.Cell(4).GetValue<string>().Trim()),
+                                                                  Convert.ToDateTime(row.Cell(3).GetValue<string>().Trim()));
+
+                            retval.Add(new sseGasModel
+                            {
+                                QuotationID = quotationid,
+                                CommercialAgreementID = row.Cell(1).GetValue<string>().Replace("'", " "),
+                                DeliveryAgreementID = row.Cell(2).GetValue<string>().Replace("'", " "),
+                                ContractStartDate = row.Cell(3).GetValue<string>().Replace("'", " "),
+                                ContractEndDate = row.Cell(4).GetValue<string>().Replace("'", " "),
+                                Term = row.Cell(5).GetValue<string>().Replace("'", " "),
+                                CustomerID = row.Cell(6).GetValue<string>().Replace("'", " "),
+                                CustomerName = row.Cell(7).GetValue<string>().Replace("'", " "),
+                                SiteAddress = row.Cell(8).GetValue<string>().Replace("'", " "),
+                                MPAN = row.Cell(9).GetValue<string>().Replace("'", " "),
+                                ProductType = row.Cell(10).GetValue<string>().Replace("'", " "),
+                                EnergyType = row.Cell(11).GetValue<string>().Replace("'", " "),
+                                MeterType = row.Cell(12).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepkWh = row.Cell(13).GetValue<string>().Replace("'", " "),
+                                PrimaryCommissionRebatepday = row.Cell(14).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepkWh = row.Cell(15).GetValue<string>().Replace("'", " "),
+                                SecondaryCommissionRebatepday = row.Cell(16).GetValue<string>().Replace("'", " "),
+                                DirectDebitDiscountpkWh = row.Cell(17).GetValue<string>().Replace("'", " "),
+                                EUCBand = row.Cell(18).GetValue<string>().Replace("'", " "),
+                                StandingChargepday = row.Cell(19).GetValue<string>().Replace("'", " "),
+                                UnitRatepkWh = row.Cell(20).GetValue<string>().Replace("'", " "),
+                                TermConsumptionkWh = row.Cell(21).GetValue<string>().Replace("'", " "),
+                                AnnualConsumptionkWh = row.Cell(22).GetValue<string>().Replace("'", " "),
+                                TotalCost = row.Cell(23).GetValue<string>().Replace("'", " "),
+
+                                noofMonths = months_calc,
+                            });
+                        }
+                    }
+                }
+            }
+            catch (System.Exception ex)
+            {
+                Console.WriteLine("Function name: engineXLSX -> ReadExcelFile ");
+                Console.WriteLine(ex.ToString());
+                errMessage = ex.Message.ToString();
+            }
+
+            return retval;
+        }
+
+        #endregion SSE
+
+        #region COMMON_FUNCTIONS
+
+        //COMMON FUNCTION
+        public static int updateAnalysisTemplateNew(string filepath, string tenderid, List<sseSCModel> scModel, string energytype, string supplier, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            try
+            {
+                #region read_details
+                viewERMTenderModel ermDetails = new viewERMTenderModel();
+                getSql getSql = new getSql();
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+                #endregion
+
+                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
+                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
+                                         "Gas";
+
+                string curr_supplier =  getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
+
+                string source_path =    filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
+                source_path =           source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+                string destin_path =    filepath.Replace("Analysis", "Analysis\\Temp");
+                destin_path =           destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
+
+                string fname =          filepath.Substring(filepath.LastIndexOf('\\'), (filepath.Length - filepath.LastIndexOf('\\')));
+
+                List<ErmAnalysisHeader> getAnalysisHeader = getSql.getAnalysisHeader(tenderid, configuration);
+
+                string version_path =   filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
+                version_path =          version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\v"+ (getAnalysisHeader.Count() + 1)+ "_AnalyzeTemplate.xlsx";
+
+                if (File.Exists(destin_path))
+                {
+                    File.Delete(destin_path);
+                }
+
+                File.Copy(source_path, destin_path);
+
+                List<string> suppRef =                      new List<string>();
+                List<List<sseSCModel>> suppData =           new List<List<sseSCModel>>();
+
+                using (var workbook = new XLWorkbook(destin_path))
+                {
+                    var worksheet = workbook.Worksheet("Summary Info");
+
+                    worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
+                    worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
+                    worksheet.Cells("AD3").Value = "<contractrenewaldate>";
+                    worksheet.Cells("AD4").Value = "<v1>";
+
+                    //
+                    string suppplier_ref =  String.Empty;
+                    int month12 =           scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12).Count();
+                    int month12brn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category=="Brown").Count();
+                    int month12grn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Green").Count();
+                    int month12sgrn =       scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Select Green").Count();
+
+                    int month24 =           scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24).Count();
+                    int month24brn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Brown").Count();
+                    int month24grn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Green").Count();
+                    int month24sgrn =       scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Select Green").Count();
+
+                    int month36 =           scModel.Where(x => Convert.ToInt32(x.noof_months) > 24).Count();
+                    int month36brn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Brown").Count();
+                    int month36grn =        scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Green").Count();
+                    int month36sgrn =       scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Select Green").Count();
+
+                    int[] monthCnt =        [month12, month24, month36];
+                    int[] monthCntBrnGrn =  [month12brn, month12grn, month12sgrn, month24brn, month24grn, month24sgrn, month36brn, month36grn, month36sgrn];
+
+                    int siRow =             11;
+                    int durationCount =     1;
+
+                    List<string> nsuppRef =             new List<string>();
+                    List<List<sseSCModel>> nsuppData =  new List<List<sseSCModel>>();
+
+                    List<string> bgsuppRef =            new List<string>();
+                    List<List<sseSCModel>> bgsuppData = new List<List<sseSCModel>>();
+
+                    if (monthCntBrnGrn.Sum() > 0)
+                    {
+                        //Has brown and green data,
+
+                        for (int i = 0; i < monthCntBrnGrn.Length; i++)
+                        {
+                            int chkmonth = monthCntBrnGrn[i] != null ? monthCntBrnGrn[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                int cvalue = 0;
+                                string etype = String.Empty;
+                                switch (i)
+                                {
+                                    case 0: etype = "Brown"; cvalue = 12; break;
+                                    case 1: etype = "Green"; cvalue = 12; break;
+                                    case 2: etype = "Select Green"; cvalue = 12; break;
+                                    case 3: etype = "Brown"; cvalue = 24; break;
+                                    case 4: etype = "Green"; cvalue = 24; break;
+                                    case 5: etype = "Select Green"; cvalue = 24; break;
+                                    case 6: etype = "Brown"; cvalue = 36; break;
+                                    case 7: etype = "Green"; cvalue = 36; break;
+                                    case 8: etype = "Select Green"; cvalue = 36; break;
+                                    default: break;
+                                }
+
+                                string fuelname = etype.Substring(0, 2);
+
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = cvalue;
+                                worksheet.Cells("AG" + siRow).Value = etype;
+                                string payterm =                      ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                       ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                suppplier_ref =     curr_supplier + " " + cvalue + ", " +
+                                                    "F (T&Cs), " +
+                                                    fuelname + ", " +
+                                                    payterm.Substring(0, 1) + ", " +
+                                                    ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                bgsuppRef.Add(suppplier_ref);
+                                bgsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef = bgsuppRef;
+                        suppData = bgsuppData;
+                    }
+                    else
+                    {
+                        // 
+                        for (int i = 0; i < monthCnt.Length; i++)
+                        {
+                            int chkmonth = monthCnt[i] != null ? monthCnt[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = (i + 1) * 12;
+                                worksheet.Cells("AG" + siRow).Value = getFuelname(ermDetails.ermTender.fueltype);
+                                string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                        ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                int cvalue = (i + 1) * 12;
+
+                                string fuelname = getFuelname(ermDetails.ermTender.fueltype).Substring(0, 2);
+
+                                suppplier_ref = curr_supplier + " " + cvalue + ", " +
+                                                "F (T&Cs), " +
+                                                fuelname + ", " +
+                                                payterm.Substring(0, 1) + ", " +
+                                                ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                nsuppRef.Add(suppplier_ref);
+                                nsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef = nsuppRef;
+                        suppData = nsuppData;
+
+                    }
+                    //
+
+                    var Analysis_wks =              workbook.Worksheet("Analysis");
+                    int strowIdx =                  10;
+                    int stcolIdx =                  2;
+                    string contractrenewal_date =   String.Empty;
+                    string accountname =            String.Empty;
+
+                    int isnRow1 = (int)'A';
+                    int isnRow2 = (int)'I';
+                    int isnCol =  8;
+
+                    char csnRow1 = (char)isnRow1;
+                    char csnRow2 = (char)isnRow2;
+
+                    foreach(string s in suppRef)
+                    {
+                        string sval = csnRow1.ToString() + csnRow2.ToString() + isnCol;
+                        Analysis_wks.Cell(sval).Value = s;
+
+                        isnRow2 = isnRow2 + 7;
+                        csnRow2 = (char)isnRow2;
+
+                    }
+
+                    if (ermDetails != null)
+                    {
+                        if (energytype.Equals("HH") || 
+                            energytype.Equals("NHH"))
+                        {
+                            if (ermDetails.ermDetailNHH != null)
+                            {
+                                accountname = ermDetails.ermHeader.AccountId == "1" ? "The Monarch Partnership" : "EIC Partnership";
+
+                                foreach (var item in ermDetails.ermDetailNHH)
+                                {
+                                    if (contractrenewal_date.Length <= 0)
+                                    {
+                                        contractrenewal_date = item.Start_Date.Trim();
+                                    }
+                                    stcolIdx = 2;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = curr_supplier; stcolIdx++; //item.Supplier.ToString(); 
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
+
+                                    stcolIdx = stcolIdx + 11;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString(); stcolIdx++;
+
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString(); stcolIdx++;
+
+                                    stcolIdx =              35;
+                                    string mpantosearch =   "";
+
+
+                                    if (ermDetails.ermTender.supplytype == "1" ||
+                                        ermDetails.ermTender.supplytype == "2")
+                                    {
+                                        mpantosearch = item.Mpanfull.ToString().Trim().Substring(8, item.Mpanfull.ToString().Trim().Length - 8);
+                                    }
+                                    else if (ermDetails.ermTender.supplytype == "3")
+                                    {
+                                        mpantosearch = item.Mpanfull.ToString().Trim();
+                                    }
+
+
+                                    foreach (var sd in suppData)
+                                    {
+                                        var sItem = sd.Where(x => x.mpan == mpantosearch).FirstOrDefault();
+                                        if (sItem != null)
+                                        {
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.day.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.night.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.evening.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.avail_charge.ToString(); stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.standing_charge.ToString(); stcolIdx++;
+                                        }
+                                        else
+                                        {
+                                            stcolIdx += 5;
+                                        }
+                                    }
+
+                                    strowIdx++;
+                                }
+
+                                /*
+                                stcolIdx = 35;
+                                int tempCol = 35;
+                                foreach (var sd in suppData)
+                                {
+                                    strowIdx = 10;
+                                    foreach (var item in sd)
+                                    {
+                                        stcolIdx = tempCol;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.day.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.night.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.evening.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.avail_charge.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.standing_charge.ToString(); stcolIdx++;
+                                        strowIdx++;
+                                    }
+                                    tempCol += 7;
+                                }
+                                */
+                            
+                            }
+                        }
+
+                        if (energytype.Equals("Gas"))
+                        {
+                            if (ermDetails.ermDetailGAS != null)
+                            {
+                                accountname = ermDetails.ermHeader.AccountId == "1" ? "The Monarch Partnership" : "EIC Partnership";
+
+                                foreach (var item in ermDetails.ermDetailGAS)
+                                {
+                                    if (contractrenewal_date.Length <= 0)
+                                    {
+                                        contractrenewal_date = item.Startdate.Trim();
+                                    }
+                                    stcolIdx = 2;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Startdate.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.SuppId.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mprn.ToString();
+                                    stcolIdx = stcolIdx + 11;
+
+                                    strowIdx++;
+                                }
+
+                                stcolIdx = 35;
+                                int tempCol = 35;
+                                foreach (var sd in suppData)
+                                {
+                                    strowIdx = 10;
+                                    foreach (var item in sd)
+                                    {
+                                        stcolIdx = tempCol;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.day.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.night.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.evening.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.avail_charge.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.standing_charge.ToString(); stcolIdx++;
+                                        strowIdx++;
+                                    }
+                                    tempCol += 7;
+                                }
+                            }
+                        }
+                    }
+
+                    worksheet.Cells("AD3").Value = Convert.ToDateTime(contractrenewal_date).ToString("dd/MM/yyyy");
+                    worksheet.Cells("A41").Value = accountname;
+
+                    //
+                    //var pivotTable = workbook.Worksheet("Summary Calculations");
+
+                    //IXLPivotTable pt = pivotTable.PivotTables.FirstOrDefault();
+
+                    //var f1 = pt.ReportFilters.Add("Supplier");
+
+                    //f1.AddSelectedValue(curr_supplier);
+
+                    //
+
+                    workbook.Save();
+                    workbook.SaveAs(version_path);
+                }
+
+                string ac11Value = String.Empty;
+                using (Aspose.Cells.Workbook book = new Aspose.Cells.Workbook(destin_path))
+                {
+                    Aspose.Cells.Worksheet sheet = book.Worksheets["Summary Info"];
+                    book.CalculateFormula();
+
+                    //Aspose.Cells.Worksheet sheet1 = book.Worksheets["Summary Calculations"];
+
+                    //Aspose.Cells.Pivot.PivotTableCollection pivotTables = sheet1.PivotTables;
+
+                    //int index = pivotTables.Add("=Data!A1:B6", "B1", "Edf Energy");
+                }
+
+                retval = 1;
+
+                //insert
+                ErmAnalysisHeader analysisHeader =  new ErmAnalysisHeader();
+                analysisHeader.MasErmTender =       tenderid;
+                analysisHeader.tenderref =          ermDetails.ermHeader.TenderRef;
+                analysisHeader.version =            (getAnalysisHeader.Count() + 1).ToString();
+                analysisHeader.filename =           "AnalysisTemplate";
+                analysisHeader.cusr =               "System";
+                analysisHeader.cdte =               DateTime.Now;
+                analysisHeader.isActive =           1;
+
+                double headerid = insertSql.ErmAnalysisHeaderInsert(analysisHeader, configuration);
+
+                insertSql.ErmAnalysisSummaryInsert(headerid, suppRef, suppData, configuration);
+
+                //insertSql.ErmAnalysisSummaryDetails(summaryid, suppData, configuration);
+
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return retval;
+        }
+
+        public static int updateAnalysisTemplateElec(string filepath, string tenderid, List<sseSCModel> scModel, string energytype, string supplier, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            try
+            {
+                #region read_details
+                viewERMTenderModel ermDetails = new viewERMTenderModel();
+                getSql getSql = new getSql();
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+                #endregion
+
+                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
+                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
+                                         "Gas";
+
+                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
+
+                string source_path = filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
+                source_path = source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Ele_Analysis Template 2026.xlsx";
+
+                string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
+                destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Ele_Analysis Template 2026.xlsx";
+
+                string fname = filepath.Substring(filepath.LastIndexOf('\\'), (filepath.Length - filepath.LastIndexOf('\\')));
+
+                List<ErmAnalysisHeader> getAnalysisHeader = getSql.getAnalysisHeader(tenderid, configuration);
+
+                string version_path = filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
+                version_path = version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\v" + (getAnalysisHeader.Count() + 1) + "_Ele_AnalyzeTemplate.xlsx";
+
+                if (File.Exists(destin_path))
+                {
+                    File.Delete(destin_path);
+                }
+
+                File.Copy(source_path, destin_path);
+
+                List<string> suppRef = new List<string>();
+                List<List<sseSCModel>> suppData = new List<List<sseSCModel>>();
+
+                using (var workbook = new XLWorkbook(destin_path))
+                {
+                    var worksheet = workbook.Worksheet("Summary Info");
+
+                    worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
+                    worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
+                    worksheet.Cells("AD3").Value = "<contractrenewaldate>";
+                    worksheet.Cells("AD4").Value = "v" + (getAnalysisHeader.Count() + 1);
+
+                    //
+                    string suppplier_ref = String.Empty;
+                    int month12 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12).Count();
+                    int month12brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Brown").Count();
+                    int month12grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Green").Count();
+                    int month12sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Select Green").Count();
+
+                    int month24 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24).Count();
+                    int month24brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Brown").Count();
+                    int month24grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Green").Count();
+                    int month24sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Select Green").Count();
+
+                    int month36 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24).Count();
+                    int month36brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Brown").Count();
+                    int month36grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Green").Count();
+                    int month36sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Select Green").Count();
+
+                    int[] monthCnt = [month12, month24, month36];
+                    int[] monthCntBrnGrn = [month12brn, month12grn, month12sgrn, month24brn, month24grn, month24sgrn, month36brn, month36grn, month36sgrn];
+
+                    int siRow = 11;
+                    int durationCount = 1;
+
+                    List<string> nsuppRef = new List<string>();
+                    List<List<sseSCModel>> nsuppData = new List<List<sseSCModel>>();
+
+                    List<string> bgsuppRef = new List<string>();
+                    List<List<sseSCModel>> bgsuppData = new List<List<sseSCModel>>();
+
+                    if (monthCntBrnGrn.Sum() > 0)
+                    {
+                        //Has brown and green data,
+
+                        for (int i = 0; i < monthCntBrnGrn.Length; i++)
+                        {
+                            int chkmonth = monthCntBrnGrn[i] != null ? monthCntBrnGrn[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                int cvalue = 0;
+                                string etype = String.Empty;
+                                switch (i)
+                                {
+                                    case 0: etype = "Brown"; cvalue = 12; break;
+                                    case 1: etype = "Green"; cvalue = 12; break;
+                                    case 2: etype = "Select Green"; cvalue = 12; break;
+                                    case 3: etype = "Brown"; cvalue = 24; break;
+                                    case 4: etype = "Green"; cvalue = 24; break;
+                                    case 5: etype = "Select Green"; cvalue = 24; break;
+                                    case 6: etype = "Brown"; cvalue = 36; break;
+                                    case 7: etype = "Green"; cvalue = 36; break;
+                                    case 8: etype = "Select Green"; cvalue = 36; break;
+                                    default: break;
+                                }
+
+                                string fuelname = etype.Substring(0, 2);
+
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = cvalue;
+                                worksheet.Cells("AG" + siRow).Value = etype;
+                                string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                       ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                suppplier_ref = curr_supplier + " " + cvalue + ", " +
+                                                    "F (T&Cs), " +
+                                                    fuelname + ", " +
+                                                    payterm.Substring(0, 1) + ", " +
+                                                    ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                bgsuppRef.Add(suppplier_ref);
+                                bgsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef = bgsuppRef;
+                        suppData = bgsuppData;
+                    }
+                    else
+                    {
+                        // 
+                        for (int i = 0; i < monthCnt.Length; i++)
+                        {
+                            int chkmonth = monthCnt[i] != null ? monthCnt[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = (i + 1) * 12;
+                                worksheet.Cells("AG" + siRow).Value = getFuelname(ermDetails.ermTender.fueltype);
+                                string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                        ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                int cvalue = (i + 1) * 12;
+
+                                string fuelname = getFuelname(ermDetails.ermTender.fueltype).Substring(0, 2);
+
+                                suppplier_ref = curr_supplier + " " + cvalue + ", " +
+                                                "F (T&Cs), " +
+                                                fuelname + ", " +
+                                                payterm.Substring(0, 1) + ", " +
+                                                ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                nsuppRef.Add(suppplier_ref);
+                                nsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef =   nsuppRef;
+                        suppData =  nsuppData;
+
+                    }
+                    //
+
+                    var Analysis_wks =              workbook.Worksheet("Analysis");
+                    int strowIdx =                  10;
+                    int stcolIdx =                  2;
+                    string contractrenewal_date =   String.Empty;
+                    string accountname =            String.Empty;
+
+                    int isnRow1 =                   (int)'A';
+                    int isnRow2 =                   (int)'I';
+                    int isnCol =                    8;
+
+                    char csnRow1 =                  (char)isnRow1;
+                    char csnRow2 =                  (char)isnRow2;
+
+                    foreach (string s in suppRef)
+                    {
+                        string sval = csnRow1.ToString() + csnRow2.ToString() + isnCol;
+                        Analysis_wks.Cell(sval).Value = s;
+
+                        isnRow2 = isnRow2 + 7;
+                        csnRow2 = (char)isnRow2;
+
+                    }
+
+                    if (ermDetails != null)
+                    {
+                        if (energytype.Equals("HH") ||
+                            energytype.Equals("NHH"))
+                        {
+                            if (ermDetails.ermDetailNHH != null)
+                            {
+                                accountname = ermDetails.ermHeader.AccountId == "1" ? "The Monarch Partnership" : "EIC Partnership";
+
+                                foreach (var item in ermDetails.ermDetailNHH)
+                                {
+                                    if (contractrenewal_date.Length <= 0)
+                                    {
+                                        contractrenewal_date = item.Start_Date.Trim();
+                                    }
+                                    stcolIdx = 2;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString().Length > 0 ? Convert.ToDateTime(item.Start_Date.ToString()).ToString("dd/MM/yyyy") : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = curr_supplier; stcolIdx++; //item.Supplier.ToString(); 
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
+
+                                    stcolIdx = stcolIdx + 11;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString().Length >0 ? Convert.ToDecimal(item.Day_kWh.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Night_kWh.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Evening_kWh.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Total_kWh.ToString()) : ""; stcolIdx++;
+
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString().Length > 0 ? Convert.ToDecimal(item.DayRate.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString().Length > 0 ? Convert.ToDecimal(item.NightRate.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString().Length >0 ? Convert.ToDecimal(item.EveningRate.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString().Length; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString().Length > 0 ? Convert.ToDecimal(item.StandingCharge_penceorday.ToString()) : ""; stcolIdx++;
+
+                                    stcolIdx = 35;
+                                    string mpantosearch = "";
+
+
+                                    if (ermDetails.ermTender.supplytype == "1" ||
+                                        ermDetails.ermTender.supplytype == "2")
+                                    {
+                                        mpantosearch = item.Mpanfull.ToString().Trim().Substring(8, item.Mpanfull.ToString().Trim().Length - 8);
+                                    }
+                                    else if (ermDetails.ermTender.supplytype == "3")
+                                    {
+                                        mpantosearch = item.Mpanfull.ToString().Trim();
+                                    }
+
+
+                                    foreach (var sd in suppData)
+                                    {
+                                        var sItem = sd.Where(x => x.mpan == mpantosearch).FirstOrDefault();
+                                        if (sItem != null)
+                                        {
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.day.ToString().Length > 0 ? Convert.ToDecimal(sItem.day.ToString()):""; stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.night.ToString().Length > 0 ? Convert.ToDecimal(sItem.night.ToString()) :  ""; stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.evening.ToString().Length > 0 ? Convert.ToDecimal(sItem.evening.ToString()) : ""; stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.avail_charge.ToString().Length > 0 ? Convert.ToDecimal(sItem.avail_charge.ToString()) : ""; stcolIdx++;
+                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = sItem.standing_charge.ToString().Length > 0 ? Convert.ToDecimal(sItem.standing_charge.ToString()):""; stcolIdx++;
+                                            Analysis_wks.Row(1).Cell(stcolIdx + 1).Value =    DateTime.Now.ToString("dd/MM/yyyy");
+
+                                        }
+                                        else
+                                        {
+                                            stcolIdx += 5;
+                                        }
+                                    }
+
+                                    strowIdx++;
+                                }
+                            }
+                        }
+                    }
+
+                    worksheet.Cells("AD3").Value = Convert.ToDateTime(contractrenewal_date).ToString("dd/MM/yyyy");
+                    worksheet.Cells("A41").Value = accountname;
+
+                    workbook.Save();
+                    workbook.SaveAs(version_path);
+                }
+
+                string ac11Value = String.Empty;
+                using (Aspose.Cells.Workbook book = new Aspose.Cells.Workbook(destin_path))
+                {
+                    Aspose.Cells.Worksheet sheet = book.Worksheets["Summary Info"];
+                    book.CalculateFormula();
+                }
+
+                //insert
+                ErmAnalysisHeader analysisHeader =  new ErmAnalysisHeader();
+                analysisHeader.MasErmTender =       tenderid;
+                analysisHeader.tenderref =          ermDetails.ermHeader.TenderRef;
+                analysisHeader.version =            (getAnalysisHeader.Count() + 1).ToString();
+                analysisHeader.filename =           "AnalysisTemplate";
+                analysisHeader.cusr =               "System";
+                analysisHeader.cdte =               DateTime.Now;
+                analysisHeader.isActive =           1;
+                double headerid =                   insertSql.ErmAnalysisHeaderInsert(analysisHeader, configuration);
+
+                insertSql.ErmAnalysisSummaryInsert(headerid, suppRef, suppData, configuration);
+
+                retval = 1;
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return retval;
+        }
+
+        public static int updateAnalysisTemplateGas(string filepath, string tenderid, List<sseSCModel> scModel, string energytype, string supplier, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            try
+            {
+                #region read_details
+                viewERMTenderModel ermDetails = new viewERMTenderModel();
+                getSql getSql = new getSql();
+
+                try
+                {
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+                #endregion
+
+                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
+                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
+                                         "Gas";
+
+                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
+
+                string source_path = filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
+                source_path = source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Gas_Analysis Template 2026.xlsx";
+
+                string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
+                destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Gas_Analysis Template 2026.xlsx";
+
+                string fname = filepath.Substring(filepath.LastIndexOf('\\'), (filepath.Length - filepath.LastIndexOf('\\')));
+
+                List<ErmAnalysisHeader> getAnalysisHeader = getSql.getAnalysisHeader(tenderid, configuration);
+
+                string version_path = filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
+                version_path = version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\v" + (getAnalysisHeader.Count() + 1) + "_Gas_AnalyzeTemplate.xlsx";
+
+                if (File.Exists(destin_path))
+                {
+                    File.Delete(destin_path);
+                }
+
+                File.Copy(source_path, destin_path);
+
+                List<string> suppRef = new List<string>();
+                List<List<sseSCModel>> suppData = new List<List<sseSCModel>>();
+
+                using (var workbook = new XLWorkbook(destin_path))
+                {
+                    var worksheet = workbook.Worksheet("Summary Info");
+
+                    worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
+                    worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
+                    worksheet.Cells("AD3").Value = "<contractrenewaldate>";
+                    worksheet.Cells("AD4").Value = "v"+ (getAnalysisHeader.Count() + 1);
+
+                    //
+                    string suppplier_ref = String.Empty;
+                    int month12 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12).Count();
+                    int month12brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Brown").Count();
+                    int month12grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Green").Count();
+                    int month12sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 0 && Convert.ToInt32(x.noof_months) <= 12 && x.category == "Select Green").Count();
+
+                    int month24 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24).Count();
+                    int month24brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Brown").Count();
+                    int month24grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Green").Count();
+                    int month24sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 12 && Convert.ToInt32(x.noof_months) <= 24 && x.category == "Select Green").Count();
+
+                    int month36 = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24).Count();
+                    int month36brn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Brown").Count();
+                    int month36grn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Green").Count();
+                    int month36sgrn = scModel.Where(x => Convert.ToInt32(x.noof_months) > 24 && x.category == "Select Green").Count();
+
+                    int[] monthCnt = [month12, month24, month36];
+                    int[] monthCntBrnGrn = [month12brn, month12grn, month12sgrn, month24brn, month24grn, month24sgrn, month36brn, month36grn, month36sgrn];
+
+                    int siRow = 11;
+                    int durationCount = 1;
+
+                    List<string> nsuppRef = new List<string>();
+                    List<List<sseSCModel>> nsuppData = new List<List<sseSCModel>>();
+
+                    List<string> bgsuppRef = new List<string>();
+                    List<List<sseSCModel>> bgsuppData = new List<List<sseSCModel>>();
+
+                    if (monthCntBrnGrn.Sum() > 0)
+                    {
+                        //Has brown and green data,
+
+                        for (int i = 0; i < monthCntBrnGrn.Length; i++)
+                        {
+                            int chkmonth = monthCntBrnGrn[i] != null ? monthCntBrnGrn[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                int cvalue = 0;
+                                string etype = String.Empty;
+                                switch (i)
+                                {
+                                    case 0: etype = "Brown"; cvalue = 12; break;
+                                    case 1: etype = "Green"; cvalue = 12; break;
+                                    case 2: etype = "Select Green"; cvalue = 12; break;
+                                    case 3: etype = "Brown"; cvalue = 24; break;
+                                    case 4: etype = "Green"; cvalue = 24; break;
+                                    case 5: etype = "Select Green"; cvalue = 24; break;
+                                    case 6: etype = "Brown"; cvalue = 36; break;
+                                    case 7: etype = "Green"; cvalue = 36; break;
+                                    case 8: etype = "Select Green"; cvalue = 36; break;
+                                    default: break;
+                                }
+
+                                string fuelname = etype.Substring(0, 2);
+
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = cvalue;
+                                worksheet.Cells("AG" + siRow).Value = etype;
+                                string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                       ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                suppplier_ref = curr_supplier + " " + cvalue + ", " +
+                                                    "F (T&C), " +
+                                                    fuelname + ", " +
+                                                    payterm.Substring(0, 1) + ", " +
+                                                    ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                bgsuppRef.Add(suppplier_ref);
+                                bgsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef = bgsuppRef;
+                        suppData = bgsuppData;
+                    }
+                    else
+                    {
+                        // 
+                        for (int i = 0; i < monthCnt.Length; i++)
+                        {
+                            int chkmonth = monthCnt[i] != null ? monthCnt[i] : 0;
+
+                            if (chkmonth > 0)
+                            {
+                                worksheet.Cells("AD" + siRow).Value = curr_supplier;
+                                worksheet.Cells("AE" + siRow).Value = (i + 1) * 12;
+                                worksheet.Cells("AG" + siRow).Value = getFuelname(ermDetails.ermTender.fueltype);
+                                string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
+                                                                        ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
+                                worksheet.Cells("AH" + siRow).Value = payterm;
+                                worksheet.Cells("AI" + siRow).Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
+
+                                int cvalue = (i + 1) * 12;
+
+                                string fuelname = getFuelname(ermDetails.ermTender.fueltype).Substring(0, 2);
+
+                                suppplier_ref = curr_supplier + " " + cvalue + ", " +
+                                                "F (T&Cs), " +
+                                                fuelname + ", " +
+                                                payterm.Substring(0, 1) + ", " +
+                                                ermDetails.ermRequirements.PaymentDuration.Trim();
+
+                                nsuppRef.Add(suppplier_ref);
+                                nsuppData.Add(scModel.Where(x => Convert.ToInt32(x.noof_months) > (cvalue - 12) && Convert.ToInt32(x.noof_months) <= cvalue).ToList());
+                                siRow++;
+                            }
+                        }
+                        suppRef = nsuppRef;
+                        suppData = nsuppData;
+
+                    }
+                    //
+
+                    var Analysis_wks = workbook.Worksheet("Analysis");
+                    int strowIdx = 10;
+                    int stcolIdx = 2;
+                    string contractrenewal_date = String.Empty;
+                    string accountname = String.Empty;
+
+                    List<string> refCol = new List<string>()
+                    {
+                        "S8","V8","Y8","AB8","AE8"
+                    };
+
+                    int idx = 0;
+                    foreach (string s in suppRef)
+                    {
+                        Analysis_wks.Cell(refCol[idx]).Value = s;
+                        idx++;
+                    }
+
+                    if (ermDetails != null)
+                    {
+                        if (energytype.Equals("Gas"))
+                        {
+                            if (ermDetails.ermDetailGAS != null)
+                            {
+                                accountname = ermDetails.ermHeader.AccountId == "1" ? "The Monarch Partnership" : "EIC Partnership";
+
+                                
+                                foreach (var item in ermDetails.ermDetailGAS)
+                                {
+                                    if (contractrenewal_date.Length <= 0)
+                                    {
+                                        contractrenewal_date = item.Startdate.Trim();
+                                    }
+                                    stcolIdx = 2;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Startdate.ToString().Length > 0 ? Convert.ToDateTime(item.Startdate.ToString()).ToString("dd/MM/yyyy") : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = curr_supplier; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mprn.ToString(); stcolIdx++;
+                                    stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.kWh.ToString().Trim().Length > 0 ? Convert.ToDecimal(item.kWh.ToString().Trim()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_Rate.ToString().Trim().Length > 0 ? Convert.ToDecimal(item.Day_Rate.ToString().Trim()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Standing_charge_penceperday.ToString().Trim().Length > 0 ? Convert.ToDecimal(item.Standing_charge_penceperday.ToString().Trim()) : ""; stcolIdx++;
+
+                                    strowIdx++;
+                                }
+                                
+                                
+                                stcolIdx =      19;
+                                int tempCol =   19;
+                                foreach (var sd in suppData)
+                                {
+                                    strowIdx = 10;
+                                    foreach (var item in sd)
+                                    {
+                                        stcolIdx = tempCol;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.avail_charge.ToString().Length > 0 ? Convert.ToDecimal(item.avail_charge.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.standing_charge.ToString().Length > 0 ? Convert.ToDecimal(item.standing_charge.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(1).Cell(stcolIdx).Value =        DateTime.Now.ToString("dd/MM/yyyy");
+                                        strowIdx++;
+                                    }
+                                    tempCol += 3;
+                                }
+                            }
+                        }
+                    }
+
+                    worksheet.Cells("AD3").Value = Convert.ToDateTime(contractrenewal_date).ToString("dd/MM/yyyy");
+                    worksheet.Cells("A41").Value = accountname;
+                    workbook.Save();
+                    workbook.SaveAs(version_path);
+                }
+
+                string ac11Value = String.Empty;
+                using (Aspose.Cells.Workbook book = new Aspose.Cells.Workbook(destin_path))
+                {
+                    Aspose.Cells.Worksheet sheet = book.Worksheets["Summary Info"];
+                    book.CalculateFormula();
+                }
+
+                retval = 1;
+
+                //insert
+                ErmAnalysisHeader analysisHeader =  new ErmAnalysisHeader();
+                analysisHeader.MasErmTender=        tenderid;
+                analysisHeader.tenderref =          ermDetails.ermHeader.TenderRef;
+                analysisHeader.version =            (getAnalysisHeader.Count() + 1).ToString();
+                analysisHeader.filename =           "AnalysisTemplate";
+                analysisHeader.cusr =               "System";
+                analysisHeader.cdte =               DateTime.Now;
+                analysisHeader.isActive =           1;
+
+                double headerid =                   insertSql.ErmAnalysisHeaderInsert(analysisHeader, configuration);
+
+                insertSql.ErmAnalysisSummaryInsert(headerid, suppRef, suppData, configuration);
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return retval;
+        }
+
+        public static string getFuelname(string fueltype)
+        {
+            string fuel = String.Empty;
+            try
+            {
+                if (fueltype.Length > 0)
+                {
+                    if (fueltype.Substring(0, 2) == "BR")
+                    {
+                        fuel = "Brown";
+                    }
+
+                    if (fueltype.Substring(2, 2) == "GR")
+                    {
+                        fuel += ", Green";
+                    }
+
+                    if (fueltype.Substring(4, 2) == "CA")
+                    {
+                        fuel += ", Carbon Zero Gas - Ecotricity";
+                    }
+
+                    if (fueltype.Substring(6, 2) == "SG")
+                    {
+                        fuel += ", Select Green";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+            return fuel;
+        }
+
         public static int GetMonthsDifference(DateTime startDate, DateTime endDate)
         {
             return Math.Abs(((endDate.Year - startDate.Year) * 12) + endDate.Month - startDate.Month);
@@ -1053,6 +2471,8 @@
                 string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
                 destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\PriceLoaderV10.xlsx";
 
+                string version_path = filepath.Replace("Analysis", "Analysis\\Temp");
+                version_path = version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\v1_PriceLoader.xlsx";
 
                 using (var workbook = new XLWorkbook(source_path))
                 {
@@ -1066,12 +2486,14 @@
                     foreach (var data in model)
                     {
                         worksheet.Row(irow).Cell(1).Value = data.AMR;
-                        worksheet.Row(irow).Cell(3).Value = data.MPAN;
+                        worksheet.Row(irow).Cell(2).Value = data.MeterType;
+                        worksheet.Row(irow).Cell(3).Value = data.MPAN != null ? Convert.ToDouble(data.MPAN) : 0;
                         worksheet.Row(irow).Cell(8).Value = data.StandingChargeRate;
                         irow++;
                     }
 
                     workbook.SaveAs(destin_path);
+                    workbook.SaveAs(version_path);
                 }
             }
             catch (System.Exception ex)
@@ -1125,333 +2547,27 @@
 
         }
 
-
-        //EDF
-        public static int updateAnalysisTemplate(string filepath, string tenderid, List<edfModel> client, string energytype, string supplier, IConfiguration configuration)
+        public static void updatePivot(string filepath)
         {
-            int retval = -1;
+            string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
+            destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
 
-            StreamWriter sw = new StreamWriter("analysis.log");
-            try
+            using (var workbook = new XLWorkbook(destin_path))
             {
-                #region read_details
-                viewERMTenderModel ermDetails = new viewERMTenderModel();
-                getSql getSql = new getSql();
+                //
+                var pivotTable = workbook.Worksheet("Summary Calculations");
 
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection())
-                    {
-                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
-                        connection.Open();
+                IXLPivotTable pt = pivotTable.PivotTables.FirstOrDefault();
 
-                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+                var f1 = pt.ReportFilters.Add("Supplier");
 
-                    }
-                }
-                catch (Exception e)
-                {
-                }
-                finally
-                {
+                f1.AddSelectedValue("EDF Energy");
 
-                }
-                #endregion
-
-                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
-                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
-                                         "Gas";
-
-                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
-
-                sw.WriteLine(energytype);
-                sw.WriteLine(supplier);
-
-                sw.WriteLine(curr_supplytype);
-                sw.WriteLine(curr_supplier);
-
-
-                //if (energytype == curr_supplytype && supplier == curr_supplytype)
-                {
-                    sw.WriteLine(filepath);
-
-                    int supplytype_count = client.Where(x => x.MeterGroup == curr_supplytype).Count();
-
-                    sw.WriteLine("supplytype_count : " + supplytype_count);
-
-                    //if (supplytype_count > 0)
-                    {
-                        sw.WriteLine(filepath);
-
-                        string source_path =    filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
-                        source_path =           source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
-
-                        string destin_path =    filepath.Replace("Analysis", "Analysis\\Temp");
-                        destin_path =           destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
-
-                        //string version_path =   filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
-                        //version_path =          version_path.Substring(0, version_path.LastIndexOf('\\')) + "\\Analysis_Template_2026.xlsx";
-
-                        sw.WriteLine(source_path);
-                        sw.WriteLine(destin_path);
-
-                        if (File.Exists(destin_path))
-                        {
-                            File.Delete(destin_path);
-                        }
-
-                        File.Copy(source_path, destin_path);
-
-                        using (var workbook = new XLWorkbook(destin_path))
-                        {
-                            var worksheet = workbook.Worksheet("Summary Info");
-
-                            worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
-                            worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
-                            worksheet.Cells("AD3").Value = "<contractrenewaldate>";
-                            worksheet.Cells("AD4").Value = "<v1>";
-
-                            worksheet.Cells("AD11").Value = curr_supplier;
-                            worksheet.Cells("AG11").Value = getFuelname(ermDetails.ermTender.fueltype);
-                            string payterm =                ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
-                                                                ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
-                            worksheet.Cells("AH11").Value = payterm;
-                            worksheet.Cells("AI11").Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
-                          
-                            var Analysis_wks = workbook.Worksheet("Analysis");
-                            int strowIdx = 10;
-                            int stcolIdx = 2;
-
-                            if (ermDetails != null)
-                            {
-                                if (energytype.Equals("HH") || energytype.Equals("NHH"))
-                                {
-                                    if (ermDetails.ermDetailNHH != null)
-                                    {
-                                        foreach (var item in ermDetails.ermDetailNHH)
-                                        {
-                                            stcolIdx = 2;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Supplier.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
-                                            stcolIdx = stcolIdx + 11;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString(); stcolIdx++;
-
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString(); stcolIdx++;
-                                            Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString(); stcolIdx++;
-
-                                            strowIdx++;
-                                        }
-                                    }
-                                }
-                            }
-
-                            workbook.Save();
-                        }
-                    }
-                }
-
-                retval = 1;
+                //
             }
-            catch (Exception ex)
-            {
-                sw.WriteLine(ex.Message);
-            }
-
-            sw.Close();
-            return retval;
         }
 
-
-        //SSE
-        public static int updateAnalysisTemplateNew(string filepath, string tenderid, List<sseSCModel> scModel, string energytype, string supplier, IConfiguration configuration)
-        {
-            int retval = -1;
-
-            try
-            {
-                #region read_details
-                viewERMTenderModel ermDetails = new viewERMTenderModel();
-                getSql getSql = new getSql();
-
-                try
-                {
-                    using (SqlConnection connection = new SqlConnection())
-                    {
-                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
-                        connection.Open();
-
-                        ermDetails = getSql.getTenderAll(tenderid, configuration);
-
-                    }
-                }
-                catch (Exception e)
-                {
-                }
-                finally
-                {
-
-                }
-                #endregion
-
-                string curr_supplytype = ermDetails.ermTender.supplytype.ToString() == "1" ? "HH" :
-                                         ermDetails.ermTender.supplytype.ToString() == "2" ? "NHH" :
-                                         "Gas";
-
-                string curr_supplier = getSql.getSupplierName(ermDetails.ermTender.supplier.ToString(), configuration);
-
-                {
-
-                    string source_path = filepath.Replace("Analysis", "Analysis\\AnalysisTemplate");
-                    source_path = source_path.Substring(0, source_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
-
-                    string destin_path = filepath.Replace("Analysis", "Analysis\\Temp");
-                    destin_path = destin_path.Substring(0, destin_path.LastIndexOf('\\')) + "\\Analysis Template 2026.xlsx";
-
-
-                    if (File.Exists(destin_path))
-                    {
-                        File.Delete(destin_path);
-                    }
-
-                    File.Copy(source_path, destin_path);
-
-                    using (var workbook = new XLWorkbook(destin_path))
-                    {
-                        var worksheet = workbook.Worksheet("Summary Info");
-
-                        worksheet.Cells("AD1").Value = ermDetails.ermNetwork.name;
-                        worksheet.Cells("AD2").Value = ermDetails.ermHeader.CnbNo;
-                        worksheet.Cells("AD3").Value = "<contractrenewaldate>";
-                        worksheet.Cells("AD4").Value = "<v1>";
-
-                        worksheet.Cells("AD11").Value = curr_supplier;
-                        worksheet.Cells("AG11").Value = getFuelname(ermDetails.ermTender.fueltype);
-                        string payterm = ermDetails.ermRequirements.PaymentTerms.Length > 0 ?
-                                                            ermDetails.ermRequirements.PaymentTerms == "1" ? "BACS" : "DD" : "";
-                        worksheet.Cells("AH11").Value = payterm;
-                        worksheet.Cells("AI11").Value = ermDetails.ermRequirements.PaymentDuration.Trim() + " days";
-
-                        var Analysis_wks = workbook.Worksheet("Analysis");
-                        int strowIdx = 10;
-                        int stcolIdx = 2;
-
-                        if (ermDetails != null)
-                        {
-                            if (energytype.Equals("HH") || energytype.Equals("NHH"))
-                            {
-                                if (ermDetails.ermDetailNHH != null)
-                                {
-                                    foreach (var item in ermDetails.ermDetailNHH)
-                                    {
-                                        stcolIdx = 2;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Location_Ref.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Client_Ref.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address1.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address2.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address3.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address4.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Address5.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Postcode.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Start_Date.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Supplier.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Msn.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Mpanfull.ToString();
-                                        stcolIdx = stcolIdx + 11;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString(); stcolIdx++;
-
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString(); stcolIdx++;
-
-                                        strowIdx++;
-                                    }
-
-                                    strowIdx = 10;
-                                    foreach (var item in scModel)
-                                    {
-                                        stcolIdx = 35;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.day.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.night.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.evening.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.avail_charge.ToString(); stcolIdx++;
-                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.standing_charge.ToString(); stcolIdx++;
-                                        strowIdx++;
-                                    }
-
-                                }
-                            }
-                        }
-
-                        workbook.Save();
-                    }
-                }
-
-                retval = 1;
-            }
-            catch (Exception ex)
-            {
-            }
-
-            return retval;
-        }
-
-        public static string getFuelname(string fueltype)
-        {
-            string fuel = String.Empty;
-            try
-            {
-                if (fueltype.Length > 0)
-                {
-                    if (fueltype.Substring(0, 2) == "BR")
-                    {
-                        fuel = "Brown";
-                    }
-
-                    if (fueltype.Substring(2, 2) == "GR")
-                    {
-                        fuel += ", Green";
-                    }
-
-                    if (fueltype.Substring(4, 2) == "CA")
-                    {
-                        fuel += ", Carbon Zero Gas - Ecotricity";
-                    }
-
-                    if (fueltype.Substring(6, 2) == "SG")
-                    {
-                        fuel += ", Select Green";
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-
-            return fuel;
-        }
-
+        #endregion COMMON_FUNCTIONS
 
     }
 }
