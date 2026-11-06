@@ -4,10 +4,12 @@ using DocumentFormat.OpenXml.Drawing.Charts;
 using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
 using DocumentFormat.OpenXml.Vml.Spreadsheet;
 using DocumentFormat.OpenXml.Wordprocessing;
+using DotNet8.WebApi.Factory.DBContext;
 using DotNet8.WebApi.Factory.Model;
 using DotNet8.WebApi.Factory.Model.sse;
 using fppErm.Models;
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using String = System.String;
 
@@ -1029,9 +1031,8 @@ namespace DotNet8.WebApi.Factory.Utilities
             int retval = 0;
 
             try
-            {
-                
-                string sql = String.Format("INSERT INTO [dbo].[ErmAnalysisHeader] ([MasErmTender]" +
+            {               
+                string sql =String.Format("INSERT INTO [dbo].[ErmAnalysisHeader] ([MasErmTender]" +
                                             ", [tenderref], [version], [reportTyoe], [filename]," +
                                             "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
                                             "{0},'{1}',{2},'{3}','{4}','{5}','{6}','{7}', '{8}', {9}" +
@@ -1047,11 +1048,11 @@ namespace DotNet8.WebApi.Factory.Utilities
                                             "",
                                             model.isActive
                                             );
-                sql += "SELECT SCOPE_IDENTITY();";
-                retval += insert_to_db(sql, configuration);
+                sql +=      "SELECT SCOPE_IDENTITY();";
+                retval +=   insert_to_db(sql, configuration);
 
-                sql = "UPDATE [dbo].[MasERMTenderHeader] " +
-                                    "SET [versionid] = '" + model.version + "', [uusr] = '" + model.cusr + "',[udte]='" + model.cdte.ToString("yyyy-MM-dd HH:MM") + "' WHERE [tenderid] = '"+ model.MasErmTender + "'";
+                sql =       "UPDATE [dbo].[MasERMTenderHeader] " +
+                            "SET [versionid] = '" + model.version + "', [uusr] = '" + model.cusr + "',[udte]='" + model.cdte.ToString("yyyy-MM-dd HH:MM") + "' WHERE [tenderid] = '"+ model.MasErmTender + "'";
 
                 insert_to_db(sql, configuration);
             }
@@ -1062,21 +1063,50 @@ namespace DotNet8.WebApi.Factory.Utilities
 
         }
 
-        public static double ErmAnalysisSummaryInsert(double id, List<string> suppref, List<List<sseSCModel>> scmodel, IConfiguration configuration)
+        public static double ErmAnalysisSummaryInsert(double id, List<string> suppref, IConfiguration configuration)
         {
-            int retval = 0;
+            double retval = 0;
 
             try
             {
+                string sql = String.Empty;
+
                 foreach (string s in suppref)
                 {
-                    string sql = String.Format("INSERT INTO [dbo].[ErmAnalysisSummary] ([ErmAnalysisHeader]" +
-                                                ", [SuppRef]," +
+                    sql += String.Format("INSERT INTO [dbo].[ErmAnalysisSummary] ([ErmAnalysisHeader]" +
+                                         ", [SuppRef]," +
+                                         "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
+                                         "{0},'{1}','{2}','{3}','{4}', '{5}', {6}" +
+                                         ");",
+                                         id,
+                                         s,
+                                         "System",
+                                         DateTime.Now.ToString("yyyy-MM-dd HH:MM"),
+                                         "",
+                                         "",
+                                         1
+                                         );
+
+                    //ErmAnalysisDetailsInsert(hid, scmodel, configuration);
+                    /*
+                    foreach (var m in scmodel)
+                    {
+                        foreach (var model in m)
+                        {
+                            sql = String.Format("INSERT INTO [dbo].[ErmAnalysisDetails] ([ErmAnalysisSummary]" +
+                                                ", [mpan], [day], [night], [evening], [avail_charge], [standing_charge], [noof_months], [category], " +
                                                 "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
-                                                "{0},'{1}','{2}','{3}','{4}', '{5}', {6}" +
+                                                "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}', '{12}', {13}" +
                                                 ");",
-                                                id,
-                                                s,
+                                                hid,
+                                                model.mpan,
+                                                model.day,
+                                                model.night,
+                                                model.evening,
+                                                model.avail_charge,
+                                                model.standing_charge,
+                                                model.noof_months,
+                                                model.category,
                                                 "System",
                                                 DateTime.Now.ToString("yyyy-MM-dd HH:MM"),
                                                 "",
@@ -1084,11 +1114,14 @@ namespace DotNet8.WebApi.Factory.Utilities
                                                 1
                                                 );
 
-                    sql += "SELECT SCOPE_IDENTITY();";
-                    double hid = insert_to_db(sql, configuration);
-
-                    ErmAnalysisDetailsInsert(hid, scmodel, configuration);
+                            retval += insert_to_db(sql, configuration);
+                        }
+                    }
+                    */
                 }
+
+                insert_to_db(sql, configuration);
+                retval = 1;
 
             }
             catch (Exception ex)
@@ -1098,42 +1131,38 @@ namespace DotNet8.WebApi.Factory.Utilities
 
         }
 
-
-        public static double ErmAnalysisDetailsInsert(double id, List<List<sseSCModel>> scmodel, IConfiguration configuration)
+        public static double ErmAnalysisDetailsInsert(double id, List<sseSCModel> scmodel, IConfiguration configuration)
         {
             int retval = 0;
 
             try
             {
-                foreach (var m in scmodel)
+                string sql = String.Empty;
+                foreach (var model in scmodel)
                 {
-                    foreach (var model in m)
-                    {
-                        string sql = String.Format("INSERT INTO [dbo].[ErmAnalysisDetails] ([ErmAnalysisSummary]" +
-                                                    ", [mpan], [day], [night], [evening], [avail_charge], [standing_charge], [noof_months], [category], " +
-                                                    "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
-                                                    "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}', '{12}', {13}" +
-                                                    ");",
-                                                    id,
-                                                    model.mpan,
-                                                    model.day,
-                                                    model.night,
-                                                    model.evening,
-                                                    model.avail_charge,
-                                                    model.standing_charge,
-                                                    model.noof_months,
-                                                    model.category,
-                                                    "System",
-                                                    DateTime.Now.ToString("yyyy-MM-dd HH:MM"),
-                                                    "",
-                                                    "",
-                                                    1
-                                                    );
-
-                        retval += insert_to_db(sql, configuration);
-                    }
+                    sql += String.Format("INSERT INTO [dbo].[ErmAnalysisDetails] ([ErmAnalysisSummary]" +
+                                        ", [mpan], [day], [night], [evening], [avail_charge], [standing_charge], [noof_months], [category], " +
+                                        "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
+                                        "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}', '{12}', {13}" +
+                                        ");",
+                                        id,
+                                        model.mpan,
+                                        model.day,
+                                        model.night,
+                                        model.evening,
+                                        model.avail_charge,
+                                        model.standing_charge,
+                                        model.noof_months,
+                                        model.category,
+                                        "System",
+                                        DateTime.Now.ToString("yyyy-MM-dd HH:MM"),
+                                        "",
+                                        "",
+                                        1
+                                        );
                 }
 
+                retval = insert_to_db(sql, configuration);
             }
             catch (Exception ex)
             {

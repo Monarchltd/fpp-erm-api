@@ -411,5 +411,13 @@ namespace DotNet8.WebApi.Controllers
 
             return erm != null ? Ok(erm) : NotFound(erm);
         }
+
+        [HttpGet]
+        [Route("getSuppliername")]
+        public IActionResult getSuppliername(string id)
+        {
+            string retval = getSql.getSupplierName(id, configuration);
+            return Ok(retval);
+        }
     }
 }

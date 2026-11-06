@@ -7,6 +7,13 @@ using MimeKit;
 
 namespace DotNet8.WebApi.Factory.Utilities
 {
+    class errorDetails
+    {
+        public int id { get; set; }
+        public string mpan { get; set; }
+        public string errormessage { get; set; }
+    }
+
     public class edfValidator
     {
         public static int fileValidation(string filepath, List<edfModel> model, string tenderid, IConfiguration configuration)
@@ -17,7 +24,7 @@ namespace DotNet8.WebApi.Factory.Utilities
             {
                 #region read_details
                 viewERMTenderModel ermDetails = new viewERMTenderModel();
-                getSql getSql = new getSql();
+                getSql getSql =                 new getSql();
 
                 try
                 {
@@ -26,7 +33,7 @@ namespace DotNet8.WebApi.Factory.Utilities
                         connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
                         connection.Open();
 
-                        ermDetails = getSql.getTenderAll(tenderid, configuration);
+                        ermDetails =                  getSql.getTenderAll(tenderid, configuration);
 
                     }
                 }
@@ -39,20 +46,42 @@ namespace DotNet8.WebApi.Factory.Utilities
                 }
                 #endregion
 
-                string fname = filepath.Substring(filepath.LastIndexOf('\\'), (filepath.Length- filepath.LastIndexOf('\\')));
+                List<errorDetails> err = new List<errorDetails>();
+
+                foreach (var itm in model)
+                {
+                    string errmessage = String.Empty;
+
+                    //Check for Payment Method.
+                    string paymethod =  ermDetails.ermRequirements.PaymentTerms == "1" ? "Direct Debit" : "BACS";
+                    errmessage +=       itm.PaymentMethod == paymethod ? "" : "Payment Method: Fail " + itm.PaymentMethod+ " -ne- " + paymethod + ",";
+
+                    //Check for Payment Period.
+                    errmessage +=       itm.PaymentPeriod == ermDetails.ermRequirements.PaymentDuration ? "" : "Payment Period: Fail " + itm.PaymentPeriod + " -ne- " + ermDetails.ermRequirements.PaymentDuration + ",";
+
+                    if (errmessage.Trim().Length > 0)
+                        err.Add(new errorDetails { mpan = itm.MPAN, errormessage = errmessage });
+
+                }
+
+                string fname =          filepath.Substring(filepath.LastIndexOf('\\'), (filepath.Length- filepath.LastIndexOf('\\')));
+                fname =                 fname.Replace(".xlsx", DateTime.Now.ToString("ddMMyyyyHHMMSS")+".csv");
 
                 string destin_path =    filepath.Replace("Analysis", "Uploads\\" + ermDetails.ermHeader.TenderRef);
                 destin_path =           destin_path.Substring(0, destin_path.LastIndexOf('\\')) + fname.Replace("\\", "\\Error_");
+                
+                StreamWriter sw =       new StreamWriter(destin_path);
 
-                File.Copy(filepath, destin_path);
+                sw.WriteLine("MPAN, Error Message");
 
-                //using (var workbook = new XLWorkbook())
-                //{
-                //    var worksheet =                     workbook.Worksheets.Add("Error Report");
-                //    worksheet.Cell("A1").Value =        "Hello World!";
-                //    worksheet.Cell("A2").FormulaA1 =    "=MID(A1, 7, 5)";
-                //    workbook.SaveAs(destin_path);
-                //}
+                foreach (var itm in err)
+                {
+                    sw.WriteLine("m"+itm.mpan.ToString() + "," + itm.errormessage);
+                }
+                sw.Close();
+
+                retval = err.Count();
+
             }
             catch(Exception ex)
             {

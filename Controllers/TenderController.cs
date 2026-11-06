@@ -1,5 +1,6 @@
 ﻿
 using DotNet8.WebApi.Factory.Model;
+using DotNet8.WebApi.Factory.Utilities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
@@ -198,7 +199,7 @@ namespace DotNet8.WebApi.Controllers
                                     "JOIN [dbo].[MasERMNetwork] E on E.id = B.network_id " +
                                     "JOIN [dbo].[MasERMClient] C on C.id = E.clientid " +
                                     "JOIN [dbo].[TrnERMTenderStatus_1] F on F.id = A.statusid " +
-                                    "WHERE A.isActive=1 and (A.tenderid='"+ tenderid + "' or A.cnbno='"+ cnbno + "') ORDER BY F.cdte desc";
+                                    "WHERE A.isActive=1 and (A.tenderid='"+ tenderid + "' or A.cnbno='"+ cnbno + "') ORDER BY C.cdte, E.cdte, D.cdte, B.cdte, A.cdte, F.cdte desc";
 
                     int fieldPlcHolder = 0;
                     using (SqlCommand command = new SqlCommand(sql, connection))
@@ -378,19 +379,19 @@ namespace DotNet8.WebApi.Controllers
 
                                 ermtender.Add(new MasErmTenderHeaderModel()
                                 {
-                                    id = Convert.ToInt32(reader.GetInt64(fieldPlcHolder)),
-                                    CnbNo = reader.GetString(++fieldPlcHolder).Trim(),
-                                    AccountId = reader.GetString(++fieldPlcHolder),
-                                    TenderId = reader.GetString(++fieldPlcHolder),
-                                    TenderRef = reader.GetString(++fieldPlcHolder),
-                                    StatusId = reader.GetString(++fieldPlcHolder),
-                                    //VersionId = reader.GetString(++fieldPlcHolder),
-                                    CreatedBy = reader.GetString(fieldPlcHolder = fieldPlcHolder+2),
-                                    CreatedDate = !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
-                                    uusr = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
-                                    udte = !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
-                                    isActive = Convert.ToInt32(reader.GetInt32(++fieldPlcHolder)),
-                                    MasErmTenderModel_s = new MasErmTenderModel_3()
+                                    id =                    Convert.ToInt32(reader.GetInt64(fieldPlcHolder)),
+                                    CnbNo =                 reader.GetString(++fieldPlcHolder).Trim(),
+                                    AccountId =             reader.GetString(++fieldPlcHolder),
+                                    TenderId =              reader.GetString(++fieldPlcHolder),
+                                    TenderRef =             reader.GetString(++fieldPlcHolder),
+                                    StatusId =              reader.GetString(++fieldPlcHolder),
+                                    VersionId =             reader.GetString(++fieldPlcHolder),
+                                    CreatedBy =             reader.GetString(++fieldPlcHolder), // = fieldPlcHolder+2),
+                                    CreatedDate =           !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
+                                    uusr =                  !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
+                                    udte =                  !reader.IsDBNull(++fieldPlcHolder) ? Convert.ToDateTime(reader.GetSqlDateTime(fieldPlcHolder).ToString()) : DateTime.MinValue,
+                                    isActive =              Convert.ToInt32(reader.GetInt32(++fieldPlcHolder)),
+                                    MasErmTenderModel_s =   new MasErmTenderModel_3()
                                     {
                                         id =                reader.GetInt64(++fieldPlcHolder),
                                         network_id =        reader.GetInt64(++fieldPlcHolder),
@@ -416,7 +417,7 @@ namespace DotNet8.WebApi.Controllers
                                         udte = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetDateTime(fieldPlcHolder) : DateTime.MinValue,
                                         isActive = reader.GetInt32(++fieldPlcHolder),
                                     },
-                                    MasErmClientModel_s = new MasErmClientModel()
+                                    MasErmClientModel_s =   new MasErmClientModel()
                                     {
                                         id = reader.GetInt64(++fieldPlcHolder),
                                         name = reader.GetString(++fieldPlcHolder),
@@ -451,7 +452,7 @@ namespace DotNet8.WebApi.Controllers
                                         udte = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetDateTime(fieldPlcHolder) : DateTime.MinValue,
                                         isActive = reader.GetInt32(++fieldPlcHolder),
                                     },
-                                    MasErmNetworkModel_s = new MasErmNetworkModelNHH()
+                                    MasErmNetworkModel_s =  new MasErmNetworkModelNHH()
                                     {
                                         id = reader.GetInt64(++fieldPlcHolder),
                                         clientid = reader.GetInt64(++fieldPlcHolder),
@@ -474,23 +475,22 @@ namespace DotNet8.WebApi.Controllers
                                         udte = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetDateTime(fieldPlcHolder) : DateTime.MinValue,
                                         isActive = reader.GetInt32(++fieldPlcHolder)
                                     },
-                                    TrnERMTenderStatus_s = new TrnERMTenderStatus_1()
+                                    TrnERMTenderStatus_s =  new TrnERMTenderStatus_1()
                                     {
-                                        id = reader.GetInt64(++fieldPlcHolder),
-                                        MasErmTender = reader.GetInt64(++fieldPlcHolder),
-                                        tenderref = reader.GetString(++fieldPlcHolder),
-                                        StatusId = reader.GetInt32(++fieldPlcHolder),
-                                        StatusDesc = reader.GetString(++fieldPlcHolder),
-                                        SubStatusId = reader.GetInt32(++fieldPlcHolder),
-                                        SubStatusDesc = reader.GetString(++fieldPlcHolder),
-                                        CurrentState = reader.GetInt32(++fieldPlcHolder),
-                                        cusr = reader.GetString(++fieldPlcHolder),
-                                        cdte = reader.GetDateTime(++fieldPlcHolder),
-                                        uusr = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
-                                        udte = !reader.IsDBNull(++fieldPlcHolder) ? reader.GetDateTime(fieldPlcHolder) : DateTime.MinValue,
-                                        isActive = reader.GetInt32(++fieldPlcHolder)
+                                        id =                reader.GetInt64(++fieldPlcHolder),
+                                        MasErmTender =      reader.GetInt64(++fieldPlcHolder),
+                                        tenderref =         reader.GetString(++fieldPlcHolder),
+                                        StatusId =          reader.GetInt32(++fieldPlcHolder),
+                                        StatusDesc =        reader.GetString(++fieldPlcHolder),
+                                        SubStatusId =       reader.GetInt32(++fieldPlcHolder),
+                                        SubStatusDesc =     reader.GetString(++fieldPlcHolder),
+                                        CurrentState =      reader.GetInt32(++fieldPlcHolder),
+                                        cusr =              reader.GetString(++fieldPlcHolder),
+                                        cdte =              reader.GetDateTime(++fieldPlcHolder),
+                                        uusr =              !reader.IsDBNull(++fieldPlcHolder) ? reader.GetString(fieldPlcHolder) : String.Empty,
+                                        udte =              !reader.IsDBNull(++fieldPlcHolder) ? reader.GetDateTime(fieldPlcHolder) : DateTime.MinValue,
+                                        isActive =          reader.GetInt32(++fieldPlcHolder)
                                     },
-                                    VersionId = !reader.IsDBNull(reader.FieldCount-1) ? reader.GetInt32(reader.FieldCount-1).ToString() : String.Empty
                                 });
                             }
                         }
@@ -509,6 +509,13 @@ namespace DotNet8.WebApi.Controllers
             return ermtender != null ? (ermtender.Count > 0 ? Ok(ermtender) : NotFound(excpMessage)) : NotFound();
         }
 
+        [HttpGet]
+        [Route("deleteTender")]
+        public IActionResult deleteTender(string id)
+        {
+            int status = deleteSql.deleteTender(id.Trim(), configuration);
 
+            return Ok(status);
+        }
     }
 }
