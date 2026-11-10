@@ -5,23 +5,25 @@
     using DotNet8.WebApi.Factory.Model.Edf;
     using System;
     using System.Collections.Generic;
-    using Microsoft.Data.SqlClient;
     using Microsoft.Extensions.Configuration;
     using DotNet8.WebApi.Factory.Model.sse;
     using System.Linq;
-    
+    using System.Data.SqlClient;
+    using static DotNet8.WebApi.Factory.Utilities.engineXLSX;
+    using OfficeOpenXml.Utils;
 
     public class engineXLSX
     {
-        protected List<string> _refCol = null;
-
-        public engineXLSX()
+        public static List<string> _refCol = new List<string>()
         {
-            _refCol = new List<string>()
-                                {
-                                    "AI8","AP8","AW8","BD8","BK8", "BR8","BY8","CF8","CM8","CT8","DA8","DH8","DO8","DV8","EC8","EJ8","EQ8","EX8","FE8", "FL8"
-                                };
-        }
+            "AI8","AP8","AW8","BD8","BK8", "BR8","BY8","CF8","CM8","CT8","DA8","DH8","DO8","DV8","EC8","EJ8","EQ8","EX8","FE8","FL8", "FS8", "FZ8", "GG8", "GN8", "GU8", "HB8", "HI8", "HP8", "HW8", "ID8", "IK8", "IR8", "IY8", "JF8", "JM8", "JT8", "KA8"
+        };
+
+        public static List<string> _gasrefCol = new List<string>()
+        {
+            "S8","V8","Y8","AB8","AE8", "AH8", "AK8"
+        };
+
 
         public class analysisStruct
         {
@@ -2320,6 +2322,7 @@
                 List<string> suppRef =                            new List<string>();
                 List<List<sseSCModel>> suppData =                 new List<List<sseSCModel>>();
                 ErmAnalysisDetailsInsertModel ermDetailsInsert =  new ErmAnalysisDetailsInsertModel();
+                List<analysisStruct> analysisStructs =            new List<analysisStruct>();
 
                 using (var workbook = new XLWorkbook(destin_path))
                 {
@@ -2447,17 +2450,17 @@
                     }
                     //
 
-                    List<analysisStruct> analysisStructs = new List<analysisStruct>();
-                    int col = 28;
-                    int item_idx = 1;
+                    //List<analysisStruct> analysisStructs = new List<analysisStruct>();
+                    int col =       28;
+                    int item_idx =  1;
                     foreach(var itm in suppRef)
                     {
                         analysisStruct tmpStruct = new analysisStruct();
-                        string[] split1 = itm.Split(',');
+                        string[] sp = itm.Split(',');
                         if (tmpStruct != null)
                         {
-                            tmpStruct.supplier =            split1.Length > 0 ? split1[0] : "";
-                            int tmpVal =                    split1.Length > 0 ? Convert.ToInt32(split1[0].Replace(curr_supplier, "").Trim()) : 0;
+                            tmpStruct.supplier =            sp.Length > 0 ? sp[0] : "";
+                            int tmpVal =                    sp.Length > 0 ? Convert.ToInt32(sp[0].Replace(curr_supplier, "").Trim()) : 0;
 
                             if (tmpVal >0 && tmpVal <=12)
                             {
@@ -2475,7 +2478,7 @@
                                 tmpStruct.en_mon = 999;
                             }
 
-                            tmpStruct.category =            split1.Length > 2 ? split1[2] : "";
+                            tmpStruct.category =            sp.Length > 2 ? sp[2] : "";
                             tmpStruct.col_to_startInsert =  col + (7 * item_idx);
                             analysisStructs.Add(tmpStruct);
                         }
@@ -2535,18 +2538,17 @@
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Day_kWh.ToString().Length >0 ? Convert.ToDecimal(item.Day_kWh.ToString()) : ""; stcolIdx++;
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Night_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Night_kWh.ToString()) : ""; stcolIdx++;
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Evening_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Evening_kWh.ToString()) : ""; stcolIdx++;
-                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.Total_kWh.ToString().Length > 0 ? Convert.ToDecimal(item.Total_kWh.ToString()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.kVa.ToString().Length > 0 ? Convert.ToDecimal(item.kVa.ToString()) : ""; stcolIdx++;
 
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.DayRate.ToString().Length > 0 ? Convert.ToDecimal(item.DayRate.ToString()) : ""; stcolIdx++;
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.NightRate.ToString().Length > 0 ? Convert.ToDecimal(item.NightRate.ToString()) : ""; stcolIdx++;
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.EveningRate.ToString().Length >0 ? Convert.ToDecimal(item.EveningRate.ToString()) : ""; stcolIdx++;
-                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.AvailRate.ToString().Length > 0 ? Convert.ToDecimal(item.AvailRate.ToString().Trim()) : ""; stcolIdx++;
+                                    Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = perAnnunCalc(item.AvailRate.ToString()); stcolIdx++;
                                     Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = item.StandingCharge_penceorday.ToString().Length > 0 ? Convert.ToDecimal(item.StandingCharge_penceorday.ToString()) : ""; stcolIdx++;
 
                                     stcolIdx =              35;
                                     string mpantosearch =   "";
-
-
+                                    
                                     if (ermDetails.ermTender.supplytype == "1" ||
                                         ermDetails.ermTender.supplytype == "2")
                                     {
@@ -2631,16 +2633,15 @@
                     }
                 }
 
-                ermDetailsInsert.header_id = insertSql.ErmAnalysisHeaderInsert(ermDetailsInsert.analysisHeader, configuration).ToString();
+                ermDetailsInsert.header_id =insertSql.ErmAnalysisHeaderInsert(ermDetailsInsert.analysisHeader, configuration).ToString();
 
-                insertSql.ErmAnalysisSummaryInsert(Convert.ToDouble(ermDetailsInsert.header_id), 
-                                                   ermDetailsInsert.suppref,
-                                                   configuration);
+                string analyseDetails =     insertSql.ErmAnalysisSummaryInsert(Convert.ToDouble(ermDetailsInsert.header_id), 
+                                                                            ermDetailsInsert.suppref,
+                                                                            configuration);
 
-                insertSql.ErmAnalysisDetailsInsert(Convert.ToDouble(ermDetailsInsert.header_id),
-                                                   ermDetailsInsert.scmodel,
-                                                   configuration);
-                
+                //insert details in [ErmAnalysisDetails] db.
+                enumerateAnalysisDetails(analysisStructs, suppData, analyseDetails, configuration);
+
                 retval = 1;
             }
             catch (Exception ex)
@@ -2713,6 +2714,7 @@
                 List<string> suppRef =                           new List<string>();
                 List<List<sseSCModel>> suppData =                new List<List<sseSCModel>>();
                 ErmAnalysisDetailsInsertModel ermDetailsInsert = new ErmAnalysisDetailsInsertModel();
+                List<analysisStruct> analysisStructs =           new List<analysisStruct>();
 
                 using (var workbook = new XLWorkbook(destin_path))
                 {
@@ -2842,7 +2844,7 @@
                     }
                     //
 
-                    List<analysisStruct> analysisStructs =  new List<analysisStruct>();
+                    //List<analysisStruct> analysisStructs =  new List<analysisStruct>();
                     int col =                               16;
                     int item_idx =                          1;
                     foreach (var itm in suppRef)
@@ -3006,15 +3008,15 @@
                     }
                 }
 
-                ermDetailsInsert.header_id = insertSql.ErmAnalysisHeaderInsert(ermDetailsInsert.analysisHeader, configuration).ToString();
+                ermDetailsInsert.header_id =insertSql.ErmAnalysisHeaderInsert(ermDetailsInsert.analysisHeader, configuration).ToString();
 
-                insertSql.ErmAnalysisSummaryInsert(Convert.ToDouble(ermDetailsInsert.header_id),
-                                                   ermDetailsInsert.suppref,
-                                                   configuration);
+                string analyseDetails =     insertSql.ErmAnalysisSummaryInsert(Convert.ToDouble(ermDetailsInsert.header_id),
+                                                                            ermDetailsInsert.suppref,
+                                                                            configuration);
 
-                insertSql.ErmAnalysisDetailsInsert(Convert.ToDouble(ermDetailsInsert.header_id),
-                                                   ermDetailsInsert.scmodel,
-                                                   configuration);
+                //insert details in [ErmAnalysisDetails] db.
+                enumerateAnalysisDetails(analysisStructs, suppData, analyseDetails, configuration);
+
             }
             catch (Exception ex)
             {
@@ -3176,6 +3178,82 @@
             }
         }
 
+        public static void enumerateAnalysisDetails(List<analysisStruct> analysisStructs, List<List<sseSCModel>> suppData, string analyseDetails, IConfiguration configuration)
+        {
+            try
+            {
+                List<ErmAnalysisDetailsWithIDModel> aDetails = new List<ErmAnalysisDetailsWithIDModel>();
+                string[] split_details =                       analyseDetails.Split('~');
+
+                foreach (var item in split_details)
+                {
+                    if (item.Length > 0)
+                    {
+                        string summId =         item.Split('#')[0].Trim();
+
+                        string validateStr =    item.Split('#')[1].Trim();
+                        string[] validateStr1 = validateStr.Split(',');
+                        string[] nom1 =         validateStr1.Length > 0 ? validateStr1[0].Split(' ') : null;
+
+                        int summNom =           Convert.ToInt32(nom1 != null ? nom1[nom1.Length - 1] : 0);
+                        string summCat =        validateStr1[2].Trim().Equals("Br") ? "Brown" : 
+                                                validateStr1[2].Trim().Equals("Gr") ? "Green" : 
+                                                "Select Green";
+                        string summSupplier =   validateStr1.Length > 0 ? validateStr1[0].Replace(summNom.ToString(), "").Trim() : null;
+
+                        foreach (var s in suppData)
+                        {
+                            int st = 0, en = 0;
+                            if (summNom >0 && summNom <= 12)
+                            {
+                                st = 0;
+                                en = 12;
+                            }
+                            else if (summNom > 12 && summNom <= 24)
+                            {
+                                st = 12;
+                                en = 24;
+                            }
+                            else if (summNom > 24)
+                            {
+                                st = 24;
+                                en = 999;
+                            }
+
+                            var res = s.Where(z =>
+                                              z.category == summCat &&
+                                              Convert.ToInt32(z.noof_months) > st &&
+                                              Convert.ToInt32(z.noof_months) <= en).ToList();
+
+                            foreach (var resItem in res)
+                            {
+                                aDetails.Add(new ErmAnalysisDetailsWithIDModel()
+                                {
+                                    summary_id =        summId,
+                                    mpan =              resItem.mpan,
+                                    day =               resItem.day,
+                                    night =             resItem.night,
+                                    evening =           resItem.evening,
+                                    avail_charge =      resItem.avail_charge,
+                                    standing_charge =   resItem.standing_charge,
+                                    noof_months =       resItem.noof_months,
+                                    category =          resItem.category,
+
+                                });
+                            }
+                        }
+                    }
+                }
+
+                insertSql.ErmAnalysisDetailsInsert(aDetails, configuration);
+
+            }
+            catch (Exception ex)
+            {
+
+            }
+
+        }
         #endregion COMMON_FUNCTIONS
 
         public static int createMultiAnalysisElec(List<MultiAnalysisModel> idList, IConfiguration configuration)
@@ -3255,6 +3333,44 @@
                             }
 
                             detail.Summary =                    smr;
+
+                            //Summary details.
+                            List<ErmAnalysisDetailsDBModel> smDetails = new List<ErmAnalysisDetailsDBModel>();
+
+                            foreach (var summ in smr)
+                            {
+                                sql = "select * from [ErmAnalysisDetails] where [ErmAnalysisSummary] = '" + summ.id + "'";
+                                using (SqlCommand command = new SqlCommand(sql, connection))
+                                {
+                                    using (SqlDataReader reader = command.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            smDetails.Add(new ErmAnalysisDetailsDBModel()
+                                            {
+                                                id = reader.GetInt64(0).ToString(),
+                                                ErmAnalysisSummary = reader.GetInt64(1).ToString(),
+                                                mpan = reader.GetString(2),
+                                                day = reader.GetString(3),
+                                                night = reader.GetString(4),
+                                                evening = reader.GetString(5),
+                                                avail_charge = reader.GetString(6),
+                                                standing_charge = reader.GetString(7),
+                                                noof_months = reader.GetString(8),
+                                                category = reader.GetString(9),
+                                                cusr = reader.GetString(10),
+                                                cdte = reader.GetDateTime(11),
+                                                uusr = reader.GetString(12),
+                                                udte = reader.GetDateTime(13),
+                                                isActive = reader.GetInt32(14)
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            detail.SummaryDetails = smDetails;
+
                             List<TrnERMTenderDetailsNHH> ele =  new List<TrnERMTenderDetailsNHH>();
                             viewERMTenderModel view =           getSql.getTenderAll(detail.Header.MasErmTender, configuration);
                             ele =                               view.ermDetailNHH;
@@ -3280,6 +3396,7 @@
                                   dfile);
 
                         int siRow = 11;
+                        int idx = 0;
 
                         using (var workbook = new XLWorkbook(dfile))
                         {
@@ -3307,6 +3424,13 @@
                                     }
 
                                     var Analysis_wks = workbook.Worksheet("Analysis");
+
+                                    foreach (var summ in item.Summary)
+                                    {
+                                        Analysis_wks.Cell(_refCol[idx]).Value = summ.suppref;
+                                        idx++;
+                                    }
+
                                     int strowIdx = 10;
                                     int stcolIdx = 2;
 
@@ -3337,7 +3461,25 @@
                                         Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.EveningRate.ToString().Length > 0 ? Convert.ToDecimal(itm.EveningRate.ToString()) : ""; stcolIdx++;
                                         Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.AvailRate.ToString().Length; stcolIdx++;
                                         Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.StandingCharge_penceorday.ToString().Length > 0 ? Convert.ToDecimal(itm.StandingCharge_penceorday.ToString()) : ""; stcolIdx++;
+                                        //
+                                        stcolIdx = 35;
+
+                                        foreach(var sd in dtModel.multianalyze)
+                                        {
+                                            var fres = sd.SummaryDetails.Where(x => x.mpan.ToString().Trim() == itm.Mpan_Core.ToString().Trim()).FirstOrDefault();
+
+                                            if (fres != null)
+                                            {
+                                                Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = fres.day; stcolIdx++;
+                                                Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = fres.night; stcolIdx++;
+                                                Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = fres.evening; stcolIdx++;
+                                                Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = fres.avail_charge; stcolIdx++;
+                                                Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = fres.standing_charge; stcolIdx++; stcolIdx++;
+                                            }
+                                        }
+
                                         strowIdx++;
+
                                     }
 
                                 }
@@ -3352,6 +3494,7 @@
                 {
                 }
                 finally
+
                 {
 
                 }
@@ -3667,6 +3810,274 @@
             return retval;
         }
 
+        public static int createMultiAnalysisGas(List<MultiAnalysisModel> idList, IConfiguration configuration)
+        {
+            int retval = -1;
+
+            try
+            {
+                string? masterSupplier_id = idList != null ? idList[0].tenderid.ToString() : null;
+
+                try
+                {
+                    ErmAnalysisDetailsModel dtModel =   new ErmAnalysisDetailsModel();
+                    dtModel.multianalyze =              new List<ERMMultiDetails>();
+
+                    using (SqlConnection connection = new SqlConnection())
+                    {
+                        connection.ConnectionString = configuration.GetConnectionString("DevDatabase");
+                        connection.Open();
+
+                        foreach (var item in idList)
+                        {
+                            ERMMultiDetails detail = new ERMMultiDetails();
+
+                            detail.Header = new ErmAnalysisHeader();
+
+                            string sql = "select top 1 * from [ErmAnalysisHeader] where MasErmTender = '" + item.tenderid + "' order by cdte desc";
+
+                            using (SqlCommand command = new SqlCommand(sql, connection))
+                            {
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        ErmAnalysisHeader hdr = new ErmAnalysisHeader();
+
+                                        hdr.id = reader.GetInt64(0);
+                                        hdr.MasErmTender = reader.GetInt64(1).ToString();
+                                        hdr.tenderref = reader.GetString(2);
+                                        hdr.version = reader.GetInt32(3).ToString();
+                                        hdr.reportTyoe = reader.GetInt32(4).ToString();
+                                        hdr.filename = reader.GetString(5);
+                                        hdr.cusr = reader.GetString(6);
+                                        hdr.cdte = reader.GetDateTime(7);
+                                        hdr.uusr = reader.GetString(8);
+                                        hdr.udte = reader.GetDateTime(9);
+                                        hdr.isActive = reader.GetInt32(10);
+
+                                        detail.Header = hdr;
+                                    }
+                                }
+                            }
+
+                            List<ErmAnalysisSummaryModel> smr = new List<ErmAnalysisSummaryModel>();
+
+                            sql = "select * from [ErmAnalysisSummary] where ErmAnalysisHeader = '" + detail.Header.id + "'";
+
+                            using (SqlCommand command = new SqlCommand(sql, connection))
+                            {
+                                using (SqlDataReader reader = command.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        smr.Add(new ErmAnalysisSummaryModel()
+                                        {
+                                            id = reader.GetInt64(0),
+                                            masermtender = reader.GetInt64(1),
+                                            suppref = reader.GetString(2),
+                                            cusr = reader.GetString(3),
+                                            cdte = reader.GetDateTime(4),
+                                            uusr = reader.GetString(5),
+                                            udte = reader.GetDateTime(6),
+                                            isActive = reader.GetInt32(7)
+                                        });
+                                    }
+                                }
+                            }
+
+                            detail.Summary =                    smr;
+
+                            //Summary details.
+                            List<ErmAnalysisDetailsDBModel> smDetails = new List<ErmAnalysisDetailsDBModel>();
+
+                            foreach (var summ in smr)
+                            {
+                                sql = "select * from [ErmAnalysisDetails] where [ErmAnalysisSummary] = '" + summ.id + "'";
+                                using (SqlCommand command = new SqlCommand(sql, connection))
+                                {
+                                    using (SqlDataReader reader = command.ExecuteReader())
+                                    {
+                                        while (reader.Read())
+                                        {
+                                            smDetails.Add(new ErmAnalysisDetailsDBModel()
+                                            {
+                                                id =                reader.GetInt64(0).ToString(),
+                                                ErmAnalysisSummary= reader.GetInt64(1).ToString(),
+                                                mpan =              reader.GetString(2),
+                                                day =               reader.GetString(3),
+                                                night =             reader.GetString(4),
+                                                evening =           reader.GetString(5),
+                                                avail_charge =      reader.GetString(6),
+                                                standing_charge =   reader.GetString(7),
+                                                noof_months =       reader.GetString(8),
+                                                category =          reader.GetString(9),
+                                                cusr =              reader.GetString(10),
+                                                cdte =              reader.GetDateTime(11),
+                                                uusr =              reader.GetString(12),
+                                                udte =              reader.GetDateTime(13),
+                                                isActive =          reader.GetInt32(14)
+                                            });
+                                        }
+                                    }
+                                }
+                            }
+
+                            detail.SummaryDetails = smDetails;
+
+                            List<TrnERMTenderDetailsNHH> ele =  new List<TrnERMTenderDetailsNHH>();
+                            viewERMTenderModel view =           getSql.getTenderAll(detail.Header.MasErmTender, configuration);
+                            ele =                               view.ermDetailNHH;
+                            detail.electric =                   ele;
+
+                            dtModel.multianalyze.Add(detail);
+
+                        }
+
+                    }
+
+                    //Creation of template file
+
+                    if (dtModel != null)
+                    {
+                        string dfile = @"C:\Users\Public\FixedPricingPortal\erm\ui\Analysis\Temp\MultiAnalysis.xlsx";
+
+                        if (File.Exists(dfile))
+                        {
+                            File.Delete(dfile);
+                        }
+
+                        File.Copy(@"C:\Users\Public\FixedPricingPortal\erm\ui\Analysis\AnalysisTemplate\Gas_Analysis Template 2026.xlsx",
+                                  dfile);
+
+                        int siRow = 11;
+                        int idx =   0;
+
+                        using (var workbook = new XLWorkbook(dfile))
+                        {
+                            foreach (var item in dtModel.multianalyze)
+                            {
+                                //using (var workbook = new XLWorkbook(dfile))
+                                {
+                                    var worksheet = workbook.Worksheet("Summary Info");
+                                    foreach (var summ in item.Summary)
+                                    {
+                                        string[] sdata = summ.suppref.Split(new char[] { ',' });
+
+                                        string[] months = sdata[0].Split(' ');
+                                        string duration = months.Length > 0 ? months[months.Length - 1] : "0";
+
+                                        worksheet.Cells("AD" + siRow).Value = sdata.Length > 0 ? sdata[0].Replace(duration, "").Trim() : "";
+                                        worksheet.Cells("AE" + siRow).Value = Convert.ToInt32(duration);
+                                        worksheet.Cells("AG" + siRow).Value = sdata.Length > 2 ?
+                                            sdata[2].Trim() == "Br" ? "Brown" :
+                                            sdata[2].Trim() == "Gr" ? "Green" :
+                                            sdata[2].Trim() == "Se" ? "Select Green" : "" : "";
+                                        worksheet.Cells("AH" + siRow).Value = sdata.Length > 3 ? sdata[3].Trim() == "B" ? "BACS" : "DD" : "";
+                                        worksheet.Cells("AI" + siRow).Value = sdata.Length > 4 ? sdata[4].Trim() + " days" : "";
+                                        siRow++;
+                                    }
+
+                                    var Analysis_wks = workbook.Worksheet("Analysis");
+
+                                    foreach (var summ in item.Summary)
+                                    {
+                                        Analysis_wks.Cell(_gasrefCol[idx]).Value = summ.suppref;
+                                        idx++;
+                                    }
+
+                                    int strowIdx = 10;
+                                    int stcolIdx = 2;
+
+                                    foreach (var itm in item.electric)
+                                    {
+                                        stcolIdx = 2;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Location_Ref.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Client_Ref.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Address1.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Address2.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Address3.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Address4.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Address5.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Postcode.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Start_Date.ToString().Length > 0 ? Convert.ToDateTime(itm.Start_Date.ToString()).ToString("dd/MM/yyyy") : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = ""; stcolIdx++; //item.Supplier.ToString(); 
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Msn.ToString(); stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Mpanfull.ToString();
+
+                                        stcolIdx = stcolIdx + 11;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Day_kWh.ToString().Length > 0 ? Convert.ToDecimal(itm.Day_kWh.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Night_kWh.ToString().Length > 0 ? Convert.ToDecimal(itm.Night_kWh.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Evening_kWh.ToString().Length > 0 ? Convert.ToDecimal(itm.Evening_kWh.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.Total_kWh.ToString().Length > 0 ? Convert.ToDecimal(itm.Total_kWh.ToString()) : ""; stcolIdx++;
+
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.DayRate.ToString().Length > 0 ? Convert.ToDecimal(itm.DayRate.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.NightRate.ToString().Length > 0 ? Convert.ToDecimal(itm.NightRate.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.EveningRate.ToString().Length > 0 ? Convert.ToDecimal(itm.EveningRate.ToString()) : ""; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.AvailRate.ToString().Length; stcolIdx++;
+                                        Analysis_wks.Row(strowIdx).Cell(stcolIdx).Value = itm.StandingCharge_penceorday.ToString().Length > 0 ? Convert.ToDecimal(itm.StandingCharge_penceorday.ToString()) : ""; stcolIdx++;
+                                        strowIdx++;
+                                    }
+
+                                }
+
+                                workbook.Save();
+
+                            }
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                }
+                finally
+                {
+
+                }
+
+                retval = 1;
+            }
+            catch (Exception ex)
+            {
+            }
+
+            return retval;
+        }
+
+        public static decimal perAnnunCalc(string value)
+        {
+            decimal retval = 0;
+
+            try
+            {
+                retval = Convert.ToDecimal(value.Trim());
+                retval = Math.Round((retval * 365) / 12, 3);
+            }
+            catch(Exception ex)
+            {
+
+            }
+            return retval;
+        }
+
+
+        public static decimal perkwhCalc(string value)
+        {
+            decimal retval = 0;
+
+            try
+            {
+                retval = Convert.ToDecimal(value.Trim());
+                retval = Math.Round((retval * 365) / 1200, 3);
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return retval;
+        }
 
     }
 }
+
+    

@@ -1063,9 +1063,9 @@ namespace DotNet8.WebApi.Factory.Utilities
 
         }
 
-        public static double ErmAnalysisSummaryInsert(double id, List<string> suppref, IConfiguration configuration)
+        public static string ErmAnalysisSummaryInsert(double id, List<string> suppref, IConfiguration configuration)
         {
-            double retval = 0;
+            string retval = "";
 
             try
             {
@@ -1073,7 +1073,7 @@ namespace DotNet8.WebApi.Factory.Utilities
 
                 foreach (string s in suppref)
                 {
-                    sql += String.Format("INSERT INTO [dbo].[ErmAnalysisSummary] ([ErmAnalysisHeader]" +
+                    sql = String.Format("INSERT INTO [dbo].[ErmAnalysisSummary] ([ErmAnalysisHeader]" +
                                          ", [SuppRef]," +
                                          "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
                                          "{0},'{1}','{2}','{3}','{4}', '{5}', {6}" +
@@ -1086,6 +1086,11 @@ namespace DotNet8.WebApi.Factory.Utilities
                                          "",
                                          1
                                          );
+                    sql += "SELECT SCOPE_IDENTITY();";
+
+                    double summary_id = insert_to_db(sql, configuration);
+
+                    retval += summary_id + "#" + s + "~";
 
                     //ErmAnalysisDetailsInsert(hid, scmodel, configuration);
                     /*
@@ -1119,10 +1124,6 @@ namespace DotNet8.WebApi.Factory.Utilities
                     }
                     */
                 }
-
-                insert_to_db(sql, configuration);
-                retval = 1;
-
             }
             catch (Exception ex)
             {
@@ -1131,21 +1132,21 @@ namespace DotNet8.WebApi.Factory.Utilities
 
         }
 
-        public static double ErmAnalysisDetailsInsert(double id, List<sseSCModel> scmodel, IConfiguration configuration)
+        public static double ErmAnalysisDetailsInsert(List<ErmAnalysisDetailsWithIDModel> aDetails, IConfiguration configuration)
         {
             int retval = 0;
 
             try
             {
                 string sql = String.Empty;
-                foreach (var model in scmodel)
+                foreach (var model in aDetails)
                 {
                     sql += String.Format("INSERT INTO [dbo].[ErmAnalysisDetails] ([ErmAnalysisSummary]" +
                                         ", [mpan], [day], [night], [evening], [avail_charge], [standing_charge], [noof_months], [category], " +
                                         "[cusr],[cdte],[uusr],[udte],[isActive]) values (" +
                                         "{0},'{1}','{2}','{3}','{4}','{5}','{6}','{7}','{8}','{9}','{10}','{11}', '{12}', {13}" +
                                         ");",
-                                        id,
+                                        model.summary_id,
                                         model.mpan,
                                         model.day,
                                         model.night,

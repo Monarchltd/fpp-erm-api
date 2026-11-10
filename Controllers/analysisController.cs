@@ -307,14 +307,29 @@ namespace DotNet8.WebApi.Controllers
         }
 
         [HttpPost]
-        [Route("multiAnalysis")]
-        public IActionResult multiAnalysis([FromBody]List<MultiAnalysisModel> idList)
+        [Route("multiAnalysisElec")]
+        public IActionResult multiAnalysisElec([FromBody]List<MultiAnalysisModel> idList)
         {
             try
             {
                 engineXLSX.createMultiAnalysisElec(idList, configuration);
             }
             catch(Exception ex)
+            {
+
+            }
+            return Ok();
+        }
+
+        [HttpPost]
+        [Route("multiAnalysisGas")]
+        public IActionResult multiAnalysisGas([FromBody] List<MultiAnalysisModel> idList)
+        {
+            try
+            {
+                engineXLSX.createMultiAnalysisGas(idList, configuration);
+            }
+            catch (Exception ex)
             {
 
             }
@@ -332,7 +347,6 @@ namespace DotNet8.WebApi.Controllers
             string filepath6,
             string tenderid, string type, string supplier)
         {
-
             string filepath = filepath1.Length > 1 ? filepath1 :
                               filepath2.Length > 1 ? filepath2 :
                               filepath3.Length > 1 ? filepath3 :
@@ -342,6 +356,7 @@ namespace DotNet8.WebApi.Controllers
 
             engineXLSX engineXLSX =     new engineXLSX();
             List<sseSCModel> scModel =  new List<sseSCModel>();
+            int filecount =             0;
 
             #region SSE
             if (supplier.Equals("SSE"))
@@ -539,6 +554,8 @@ namespace DotNet8.WebApi.Controllers
             #endregion SSE
 
             #region EDFENERGY
+            const string Availability_Charge_UOM = "P/KVA/DAY";
+
             try
             {
                 if (supplier.Equals("EDF Energy"))
@@ -614,7 +631,20 @@ namespace DotNet8.WebApi.Controllers
                                 return Ok(scModel);
                             }
                         }
-                        
+
+                        if (res1 != null)
+                            filecount += 1;
+                        if (res2 != null)
+                            filecount += 1;
+                        if (res3 != null)
+                            filecount += 1;
+                        if (res4 != null)
+                            filecount += 1;
+                        if (res5 != null)
+                            filecount += 1;
+                        if (res6 != null)
+                            filecount += 1;
+
                         #region file_validation
                         int valid_res =         edfValidator.fileValidation(filepath, res, tenderid, configuration);
                         #endregion file_validation
@@ -626,7 +656,14 @@ namespace DotNet8.WebApi.Controllers
                         {
                             //req04112026: Yes we can do that like - if we have same end in the uploaded files they will be
                             //categorized as 0-12 months.
-                            var req041120261_0 = res.Select(x => x.EarliestTerminationDate).Distinct().ToList();
+                            bool asapFlag = false;
+
+                            if (res.Select(x => x.EarliestTerminationDate).Distinct().Count() == 1 && filecount > 1)
+                            {
+                                asapFlag = true;
+                            }
+
+                            bool avail_charge = false;
 
                             foreach (var item in res)
                             {
@@ -636,6 +673,8 @@ namespace DotNet8.WebApi.Controllers
                                                                   x.source.Equals(item.ElectricitySource) &&
                                                                   x.noof_months == item.noofMonths).ToList();
 
+                                avail_charge = item.AvailabilityChargeUOM.Trim().Equals(Availability_Charge_UOM) ? true : false;
+
                                 if (v != null)
                                 {
                                     string brownorgreen = string.Empty;
@@ -643,7 +682,7 @@ namespace DotNet8.WebApi.Controllers
                                     brownorgreen = item.ElectricitySource.Substring(0, 2).ToLower().Trim() == "st" ? "Brown" :
                                                    item.ElectricitySource.Substring(0, 2).ToLower().Trim() == "uk" ? "Green" :
                                                    item.ElectricitySource.Substring(0, 2).ToLower().Trim() == "se" ? "Select Green" : "";
-
+                                    
                                     scModel.Add(new sseSCModel
                                     {
                                         mpan =              item.MPAN,
@@ -651,8 +690,8 @@ namespace DotNet8.WebApi.Controllers
                                         evening =           engineXLSX.getEveningvalue(item, "EDF Energy"),
                                         night =             engineXLSX.getNightvalue(item, "EDF Energy"),
                                         standing_charge =   em.calc_sccharge = v != null ? v[0].charge : "",
-                                        noof_months =       req041120261_0 != null ? (req041120261_0.Count() > 1 ? item.noofMonths.ToString() : "12") : item.noofMonths.ToString(),
-                                        avail_charge =      "0",
+                                        noof_months =       asapFlag==true ? "12" : item.noofMonths.ToString(),
+                                        avail_charge =      avail_charge == true ? engineXLSX.perkwhCalc(item.AvailabilityChargeRate).ToString() : "0",
                                         category =          brownorgreen
                                     });
 

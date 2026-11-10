@@ -11,6 +11,7 @@ namespace DotNet8.WebApi.Factory.Model
     {
         public ErmAnalysisHeader Header { get; set; }
         public List<ErmAnalysisSummaryModel> Summary { get; set; }
+        public List<ErmAnalysisDetailsDBModel> SummaryDetails { get; set;}
         public List<TrnERMTenderDetailsNHH> electric { get; set; }
         public List<TrnERMTenderDetailsGAS> gas { get; set; }
 

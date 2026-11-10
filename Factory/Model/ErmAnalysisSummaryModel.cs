@@ -2,7 +2,7 @@
 {
     public class ErmAnalysisSummaryModel
     {
-        public double id { get; set; }
+        public double? id { get; set; }
         public double masermtender { get; set; }
         public string suppref { get; set; }
         public string cusr { get; set; }
